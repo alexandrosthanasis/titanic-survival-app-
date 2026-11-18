@@ -75,8 +75,8 @@ render_html("""
     }
 
     button[data-baseweb="tab"][aria-selected="true"] {
-        color: #ffd166 !important;
-        border-bottom-color: #d4af37 !important;
+        color: #38bdf8 !important;
+        border-bottom-color: #0284c7 !important;
     }
 
     /* Radio buttons */
@@ -87,7 +87,7 @@ render_html("""
     /* Boarding pass luxury styling */
     .boarding-pass {
         background: linear-gradient(135deg, #162438 0%, #0d1726 100%);
-        border: 2px solid #d4af37;
+        border: 2px solid rgba(56, 189, 248, 0.4);
         border-radius: 16px;
         padding: 22px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -99,7 +99,7 @@ render_html("""
     .boarding-header {
         font-family: 'Cinzel', serif;
         font-size: 1.35rem;
-        color: #ffd166 !important;
+        color: #38bdf8 !important;
         margin-bottom: 2px;
     }
 
@@ -107,7 +107,7 @@ render_html("""
         font-size: 0.8rem;
         color: #a4b8d1 !important;
         letter-spacing: 2px;
-        border-bottom: 1px solid rgba(212,175,55,0.3);
+        border-bottom: 1px solid rgba(56, 189, 248, 0.3);
         padding-bottom: 8px;
         margin-bottom: 14px;
     }
@@ -134,7 +134,7 @@ render_html("""
     }
 
     .highlight-gold {
-        color: #d4af37 !important;
+        color: #ffd166 !important;
         font-weight: 700;
     }
 
@@ -143,10 +143,43 @@ render_html("""
         font-weight: 600;
     }
 
+    /* Modern Oceanic Blue buttons instead of harsh yellow */
     .stButton>button {
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.25s ease;
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.3px !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        background: #132337 !important;
+        color: #e2e8f0 !important;
+        border: 1px solid rgba(56, 189, 248, 0.25) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .stButton>button:hover {
+        background: #1e3a5f !important;
+        color: #38bdf8 !important;
+        border-color: #38bdf8 !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25) !important;
+    }
+
+    /* Primary buttons (Next step, active tab, start over) - Sleek Royal / Ocean Cyan gradient */
+    .stButton>button[kind="primary"],
+    .stButton>button[data-testid="baseButton-primary"] {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid #38bdf8 !important;
+        box-shadow: 0 4px 16px rgba(2, 132, 199, 0.45) !important;
+        font-weight: 700 !important;
+    }
+
+    .stButton>button[kind="primary"]:hover,
+    .stButton>button[data-testid="baseButton-primary"]:hover {
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important;
+        color: #ffffff !important;
+        border-color: #7dd3fc !important;
+        box-shadow: 0 6px 20px rgba(14, 165, 233, 0.6) !important;
+        transform: translateY(-2px) !important;
     }
 
     div[data-testid="stMetricLabel"] {
@@ -155,7 +188,7 @@ render_html("""
 
     div[data-testid="stMetricValue"] {
         font-family: 'Cinzel', serif !important;
-        color: #ffd166 !important;
+        color: #38bdf8 !important;
     }
 </style>
 """)
@@ -163,22 +196,102 @@ render_html("""
 # ─────────────────────────────────────────────────────────────────────────────
 # LOAD MODEL BUNDLE & DATASET
 # ─────────────────────────────────────────────────────────────────────────────
+# LOAD MODEL BUNDLE & DATASET (WITH ROBUST CLOUD IN-MEMORY FALLBACK)
+# ─────────────────────────────────────────────────────────────────────────────
+def train_model_in_memory():
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.ensemble import GradientBoostingClassifier
+    from sklearn.model_selection import train_test_split
+
+    app_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_path = os.path.join(app_dir, "Titanic.csv")
+    xlsx_path = os.path.join(app_dir, "Titanic.xlsx")
+
+    if os.path.exists(csv_path):
+        df = pd.read_csv(csv_path)
+    elif os.path.exists(xlsx_path):
+        df = pd.read_excel(xlsx_path)
+    else:
+        raise FileNotFoundError("Could not find Titanic.csv")
+
+    df.columns = df.columns.str.strip()
+    df["Fare"] = np.where(df["Fare"] > 1000, df["Fare"] / 10000.0, df["Fare"])
+    df["Fare"] = df["Fare"].fillna(df.groupby("Pclass")["Fare"].transform("median"))
+
+    df["Title"] = df["Name"].str.extract(r" ([A-Za-z]+)\.", expand=False)
+    rare_titles = ["Lady", "Countess", "Capt", "Col", "Don", "Dr", "Major", "Rev", "Sir", "Jonkheer", "Dona"]
+    df["Title"] = df["Title"].replace(rare_titles, "Rare")
+    df["Title"] = df["Title"].replace({"Mlle": "Miss", "Ms": "Miss", "Mme": "Mrs"})
+    df["Title"] = df["Title"].fillna("Rare")
+
+    df["SibSp"] = df["SibSp"].fillna(0).astype(int)
+    df["Parch"] = df["Parch"].fillna(0).astype(int)
+    df["FamilySize"] = df["SibSp"] + df["Parch"] + 1
+    df["IsAlone"] = (df["FamilySize"] == 1).astype(int)
+
+    ticket_counts = df["Ticket"].value_counts()
+    df["TicketCount"] = df["Ticket"].map(ticket_counts).fillna(1).astype(int)
+    def classify_ticket(c):
+        if c == 1:
+            return "Solo (1)"
+        elif c == 2:
+            return "Pair (2)"
+        elif c <= 4:
+            return "Small Group (3-4)"
+        else:
+            return "Large Group (5+)"
+    df["TicketGroup"] = df["TicketCount"].apply(classify_ticket)
+
+    df["Age"] = df.groupby(["Sex", "Pclass"])["Age"].transform(lambda x: x.fillna(x.median()))
+    df["Embarked"] = df["Embarked"].fillna("S")
+
+    feature_cols = [
+        "Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", 
+        "Embarked", "Title", "IsAlone", "TicketGroup"
+    ]
+
+    X = pd.get_dummies(df[feature_cols], columns=["Pclass", "Sex", "Embarked", "Title", "TicketGroup"], drop_first=True)
+    y = df["Survived"].astype(int)
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, stratify=y
+    )
+
+    lr = LogisticRegression(max_iter=1500, random_state=42)
+    lr.fit(X_train, y_train)
+
+    gb = GradientBoostingClassifier(n_estimators=120, max_depth=3, learning_rate=0.08, random_state=42)
+    gb.fit(X_train, y_train)
+
+    coefficients = pd.Series(lr.coef_[0], index=X.columns).to_dict()
+
+    bundle = {
+        "lr_model": lr,
+        "gb_model": gb,
+        "feature_columns": list(X.columns),
+        "coefficients": coefficients,
+        "intercept": float(lr.intercept_[0]),
+        "df_clean": df
+    }
+    return bundle
+
 @st.cache_resource
 def load_model_bundle():
     app_dir = os.path.dirname(os.path.abspath(__file__))
     bundle_path = os.path.join(app_dir, "model", "titanic_model_bundle.joblib")
     if not os.path.exists(bundle_path):
         bundle_path = os.path.join(app_dir, "titanic_model_bundle.joblib")
-    if not os.path.exists(bundle_path):
-        import subprocess
-        train_script = os.path.join(app_dir, "train_model.py")
-        subprocess.run(["python3", train_script], check=True)
-        bundle_path = os.path.join(app_dir, "model", "titanic_model_bundle.joblib")
-        if not os.path.exists(bundle_path):
-            bundle_path = os.path.join(app_dir, "titanic_model_bundle.joblib")
-    
-    bundle = joblib.load(bundle_path)
-    return bundle
+
+    if os.path.exists(bundle_path):
+        try:
+            bundle = joblib.load(bundle_path)
+            return bundle
+        except Exception:
+            # If pickle format differs across python/scikit-learn runtime versions,
+            # gracefully train in memory directly from Titanic.csv
+            pass
+
+    return train_model_in_memory()
 
 bundle = load_model_bundle()
 lr_model = bundle["lr_model"]
