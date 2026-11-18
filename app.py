@@ -25,25 +25,66 @@ def render_html(html_str: str):
     clean_html = "\n".join(lines)
     st.markdown(clean_html, unsafe_allow_html=True)
 
-# Custom CSS for rich maritime look
+# Custom CSS for rich maritime look and universal theme compatibility (Light & Dark)
 render_html("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
 
-    html, body, [class*="css"] {
-        font-family: 'Plus Jakarta Sans', sans-serif;
+    html, body, [class*="css"], .stApp {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
 
-    h1, h2, h3, .brand-title {
-        font-family: 'Cinzel', serif;
+    /* Force luxurious dark maritime canvas across all browser themes */
+    .stApp, [data-testid="stAppViewContainer"], .main, header, [data-testid="stHeader"] {
+        background: radial-gradient(circle at 50% 10%, #0d1b2a 0%, #080f1a 100%) !important;
+        color: #e0e6ed !important;
+    }
+
+    /* Consistent high-contrast typography */
+    h1, h2, h3, h4, h5, h6, .brand-title {
+        font-family: 'Cinzel', serif !important;
         letter-spacing: 1px;
+        color: #ffd166 !important;
     }
 
-    .main {
-        background: radial-gradient(circle at 50% 10%, #0d1b2a 0%, #080f1a 100%);
-        color: #e0e6ed;
+    p, span, label, div[data-testid="stMarkdownContainer"] p, .stMarkdown {
+        color: #d0dbe8 !important;
     }
 
+    /* Form controls: text input, selectbox, sliders in both light & dark mode */
+    div[data-baseweb="select"] > div,
+    div[data-baseweb="input"] > div,
+    div[data-baseweb="base-input"],
+    input, textarea {
+        background-color: #121e31 !important;
+        color: #ffffff !important;
+        border-color: rgba(212, 175, 55, 0.4) !important;
+    }
+
+    /* Dropdown popover menu items */
+    ul[data-baseweb="menu"], li[data-baseweb="menu-item"] {
+        background-color: #0d1726 !important;
+        color: #ffffff !important;
+    }
+
+    /* Tab navigation bar */
+    button[data-baseweb="tab"] {
+        color: #8da4be !important;
+        background-color: transparent !important;
+        font-weight: 600 !important;
+    }
+
+    button[data-baseweb="tab"][aria-selected="true"] {
+        color: #ffd166 !important;
+        border-bottom-color: #d4af37 !important;
+    }
+
+    /* Radio buttons */
+    div[role="radiogroup"] label {
+        color: #d0dbe8 !important;
+    }
+
+    /* Boarding pass luxury styling */
     .boarding-pass {
         background: linear-gradient(135deg, #162438 0%, #0d1726 100%);
         border: 2px solid #d4af37;
@@ -58,13 +99,13 @@ render_html("""
     .boarding-header {
         font-family: 'Cinzel', serif;
         font-size: 1.35rem;
-        color: #ffd166;
+        color: #ffd166 !important;
         margin-bottom: 2px;
     }
 
     .boarding-sub {
         font-size: 0.8rem;
-        color: #a4b8d1;
+        color: #a4b8d1 !important;
         letter-spacing: 2px;
         border-bottom: 1px solid rgba(212,175,55,0.3);
         padding-bottom: 8px;
@@ -73,14 +114,14 @@ render_html("""
 
     .pass-label {
         font-size: 0.72rem;
-        color: #829ab8;
+        color: #829ab8 !important;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
 
     .pass-val {
         font-size: 1.05rem;
-        color: #ffffff;
+        color: #ffffff !important;
         font-weight: 700;
     }
 
@@ -93,12 +134,12 @@ render_html("""
     }
 
     .highlight-gold {
-        color: #d4af37;
+        color: #d4af37 !important;
         font-weight: 700;
     }
 
     .highlight-cyan {
-        color: #48cae4;
+        color: #48cae4 !important;
         font-weight: 600;
     }
 
@@ -108,9 +149,13 @@ render_html("""
         transition: all 0.25s ease;
     }
 
+    div[data-testid="stMetricLabel"] {
+        color: #8da4be !important;
+    }
+
     div[data-testid="stMetricValue"] {
-        font-family: 'Cinzel', serif;
-        color: #ffd166;
+        font-family: 'Cinzel', serif !important;
+        color: #ffd166 !important;
     }
 </style>
 """)
@@ -174,71 +219,71 @@ df_boats = pd.DataFrame(LIFEBOATS)
 # HISTORICAL PERSONAS FROM KAGGLE DATASET (yasserh/titanic-dataset)
 # ─────────────────────────────────────────────────────────────────────────────
 PRESETS = {
-    "⚙️ Προσαρμοσμένος Επιβάτης (Custom Passenger)": {
+    "⚙️ Custom Passenger (Create Your Own)": {
         "name": "", "age": 28, "sex": "male", "pclass": 2, "title": "Mr",
-        "nationality": "British (UK)", "embarked": "Southampton (S)", "companions": "Solo (Μόνος/η)", "deck": "D", "side": "Starboard (Δεξιά - Murdoch)",
+        "nationality": "British (UK)", "embarked": "Southampton (S)", "companions": "Solo (1 person)", "deck": "D", "side": "Starboard (Right - Officer Murdoch)",
         "fare": 13.0, "dataset_id": None, "ticket": "", "actual_survived": None, "boat": "",
         "insight": ""
     },
-    "👑 Madeleine Force Astor (1η Θέση - 18 ετών, Σύζυγος J.J. Astor IV, Λέμβος 4) [ID #701]": {
+    "👑 Madeleine Force Astor (1st Class - Age 18, Wife of J.J. Astor IV, Boat 4) [ID #701]": {
         "name": "Madeleine Talmadge Force Astor", "age": 18, "sex": "female", "pclass": 1, "title": "Mrs",
-        "nationality": "American (USA)", "embarked": "Cherbourg (C)", "companions": "Pair (2 άτομα - π.χ. με σύντροφο/φίλο)", "deck": "C", "side": "Port (Αριστερά - Lightoller)",
-        "fare": 227.52, "dataset_id": 701, "ticket": "PC 17757", "actual_survived": 1, "boat": "Λέμβος 4 (Port)",
-        "insight": "Η 18χρονη έγκυος σύζυγος του συνταγματάρχη John Jacob Astor IV (του πλουσιότερου ανθρώπου στον πλανήτη). Ο Astor τη βοήθησε να επιβιβαστεί στη Λέμβο 4 από το παράθυρο του καταστρώματος περιπάτου. Όταν ρώτησε τον υποπλοίαρχο Lightoller αν μπορούσε να επιβιβαστεί για να την προστατεύσει λόγω της προχωρημένης εγκυμοσύνης της, ο Lightoller αρνήθηκε κατηγορηματικά («Όχι άνδρες μέχρι να επιβιβαστούν όλες οι γυναίκες»). Ο Astor χάθηκε στα παγωμένα νερά, ενώ η Madeleine σώθηκε και γέννησε τον γιο τους John Jacob Astor VI λίγους μήνες αργότερα."
+        "nationality": "American (USA)", "embarked": "Cherbourg (C)", "companions": "Pair (2 people - spouse/companion)", "deck": "C", "side": "Port (Left - Officer Lightoller)",
+        "fare": 227.52, "dataset_id": 701, "ticket": "PC 17757", "actual_survived": 1, "boat": "Lifeboat 4 (Port)",
+        "insight": "The 18-year-old pregnant wife of Colonel John Jacob Astor IV (the wealthiest man in the world). Astor helped her board Lifeboat 4 through a promenade deck window. When he asked Second Officer Lightoller if he could join to protect her due to her advanced pregnancy, Lightoller strictly refused ('No men until all women are aboard'). Astor perished in the freezing Atlantic, while Madeleine survived and gave birth to their son John Jacob Astor VI a few months later."
     },
-    "💎 Margaret 'Molly' Brown (1η Θέση - 44 ετών, 'The Unsinkable Molly Brown', Λέμβος 6) [ID #195]": {
+    "💎 Margaret 'Molly' Brown (1st Class - Age 44, 'The Unsinkable Molly Brown', Boat 6) [ID #195]": {
         "name": "Margaret 'Molly' Tobin Brown", "age": 44, "sex": "female", "pclass": 1, "title": "Mrs",
-        "nationality": "American (USA)", "embarked": "Cherbourg (C)", "companions": "Solo (Μόνος/η)", "deck": "B", "side": "Port (Αριστερά - Lightoller)",
-        "fare": 27.72, "dataset_id": 195, "ticket": "PC 17610", "actual_survived": 1, "boat": "Λέμβος 6 (Port)",
-        "insight": "Η παγκοσμίως διάσημη «Αβύθιστη Μόλι Μπράουν». Στη Λέμβο 6 (που αναχώρησε με μόλις 24 άτομα αντί για 65), απαίτησε από τον πηδαλιούχο Robert Hichens να γυρίσουν πίσω για να σώσουν ναυαγούς. Όταν εκείνος αρνήθηκε έντρομος, η Brown πήρε μόνη της το κουπί και κράτησε τις γυναίκες ζεστές με τα γουναρικά της. Στο διασωστικό πλοίο Carpathia μοίρασε τρόφιμα και ίδρυσε την Επιτροπή Επιζώντων, συγκεντρώνοντας $10,000 για τους άπορους μετανάστες της 3ης θέσης."
+        "nationality": "American (USA)", "embarked": "Cherbourg (C)", "companions": "Solo (1 person)", "deck": "B", "side": "Port (Left - Officer Lightoller)",
+        "fare": 27.72, "dataset_id": 195, "ticket": "PC 17610", "actual_survived": 1, "boat": "Lifeboat 6 (Port)",
+        "insight": "The internationally famous 'Unsinkable Molly Brown'. In Lifeboat 6 (which left with only 24 people despite a 65-person capacity), she demanded Quartermaster Robert Hichens turn back to rescue swimmers. When he terrified refused, Brown took an oar herself and kept the women warm with her furs. Aboard the rescue ship Carpathia, she distributed provisions and founded the Survivors' Committee, raising $10,000 for destitute 3rd class immigrants."
     },
-    "💼 Prof. Lawrence Beesley (2η Θέση - 34 ετών, Καθηγητής Φυσικής Cambridge, Λέμβος 13) [ID #22]": {
+    "💼 Prof. Lawrence Beesley (2nd Class - Age 34, Cambridge Physics Professor, Boat 13) [ID #22]": {
         "name": "Lawrence Beesley", "age": 34, "sex": "male", "pclass": 2, "title": "Mr",
-        "nationality": "British (UK)", "embarked": "Southampton (S)", "companions": "Solo (Μόνος/η)", "deck": "D", "side": "Starboard (Δεξιά - Murdoch)",
-        "fare": 13.0, "dataset_id": 22, "ticket": "248698", "actual_survived": 1, "boat": "Λέμβος 13 (Starboard)",
-        "insight": "Καθηγητής Φυσικής στο Dulwich College και απόφοιτος Cambridge. Βρισκόταν στη δεξιά πλευρά (Starboard) υπό τον Αξιωματικό William Murdoch, ο οποίος εφήρμοζε το «Γυναίκες και παιδιά πρώτα» (όχι αποκλειστικά), επιτρέποντας σε άνδρες να μπουν όταν δεν υπήρχαν γυναίκες στην ουρά. Καθώς η Λέμβος 13 κατέβαινε, ο Murdoch του φώναξε να πηδήξει καθώς υπήρχε κενή θέση. Ο Beesley συνέγραψε το διασημότερο και ακριβέστερο ιστορικό χρονικό: 'The Loss of the SS Titanic' (1912)."
+        "nationality": "British (UK)", "embarked": "Southampton (S)", "companions": "Solo (1 person)", "deck": "D", "side": "Starboard (Right - Officer Murdoch)",
+        "fare": 13.0, "dataset_id": 22, "ticket": "248698", "actual_survived": 1, "boat": "Lifeboat 13 (Starboard)",
+        "insight": "Cambridge-educated physics master at Dulwich College. Positioned on the Starboard side under First Officer William Murdoch, who enforced 'Women and children first' (not exclusively), allowing men to board when no women were waiting. As Lifeboat 13 was lowered, Murdoch called out to him to jump in as a seat remained vacant. Beesley subsequently authored the definitive eyewitness memoir: 'The Loss of the SS Titanic' (1912)."
     },
-    "🎓 Jack Thayer Jr. (1η Θέση - 17 ετών, Αναποδογυρισμένη Πτυσσόμενη B) [ID #551]": {
+    "🎓 Jack Thayer Jr. (1st Class - Age 17, Overturned Collapsible B) [ID #551]": {
         "name": "John Borland 'Jack' Thayer Jr.", "age": 17, "sex": "male", "pclass": 1, "title": "Mr",
-        "nationality": "American (USA)", "embarked": "Cherbourg (C)", "companions": "Small Group (3-4 άτομα - Οικογένεια)", "deck": "C", "side": "Port (Αριστερά - Lightoller)",
-        "fare": 110.88, "dataset_id": 551, "ticket": "17421", "actual_survived": 1, "boat": "Πτυσσόμενη B (Αναποδογυρισμένη)",
-        "insight": "17χρονος γιος του Αντιπροέδρου των Σιδηροδρόμων Πενσυλβάνια John B. Thayer. Αφού αποχωρίστηκε τους γονείς του στο χάος των τελευταίων λεπτών, πήδηξε στον παγωμένο Ατλαντικό και κατάφερε να σκαρφαλώσει στην αναποδογυρισμένη πτυσσόμενη λέμβο B μαζί με τον υποπλοίαρχο Lightoller. Ο πατέρας του πνίγηκε, αλλά η μητέρα του Marian (#582) σώθηκε. Οι μαρτυρίες και τα σκίτσα του Jack Thayer ήταν η πρώτη αδιάσειστη επιβεβαίωση ότι ο Τιτανικός κόπηκε στα δύο πριν βυθιστεί."
+        "nationality": "American (USA)", "embarked": "Cherbourg (C)", "companions": "Small Group (3-4 people - family)", "deck": "C", "side": "Port (Left - Officer Lightoller)",
+        "fare": 110.88, "dataset_id": 551, "ticket": "17421", "actual_survived": 1, "boat": "Collapsible B (Overturned)",
+        "insight": "17-year-old son of Pennsylvania Railroad VP John B. Thayer. Separated from his parents in the final minutes, he jumped into the frigid Atlantic and scrambled atop the overturned Collapsible B alongside Officer Lightoller. His father drowned, but his mother Marian (#582) was rescued. Jack Thayer's eyewitness sketches provided the earliest compelling visual proof that Titanic split in two before foundering."
     },
-    "👶 Master Hudson Trevor Allison (1η Θέση - Βρέφος 11 μηνών, Λέμβος 11) [ID #306]": {
+    "👶 Master Hudson Trevor Allison (1st Class - Infant 11 mos, Boat 11) [ID #306]": {
         "name": "Master Hudson Trevor Allison", "age": 1, "sex": "male", "pclass": 1, "title": "Master",
-        "nationality": "British (UK)", "embarked": "Southampton (S)", "companions": "Small Group (3-4 άτομα - Οικογένεια)", "deck": "C", "side": "Starboard (Δεξιά - Murdoch)",
-        "fare": 151.55, "dataset_id": 306, "ticket": "113781", "actual_survived": 1, "boat": "Λέμβος 11 (Starboard)",
-        "insight": "Βρέφος μόλις 11 μηνών (0.92 ετών στο dataset). Μέσα στον πανικό, η νταντά του Alice Cleaver τον πήρε και επιβιβάστηκε στη Λέμβο 11. Οι εύποροι γονείς του και η 2χρονη αδελφούλα του Helen (#298) αρνήθηκαν να επιβιβαστούν αναζητώντας απεγνωσμένα το βρέφος τους στο πλοίο, χωρίς να γνωρίζουν ότι ήταν ήδη ασφαλές. Ολόκληρη η οικογένεια χάθηκε. Η μικρή Helen Allison ήταν το μοναδικό παιδί 1ης και 2ης θέσης που έχασε τη ζωή του στον Τιτανικό."
+        "nationality": "British (UK)", "embarked": "Southampton (S)", "companions": "Small Group (3-4 people - family)", "deck": "C", "side": "Starboard (Right - Officer Murdoch)",
+        "fare": 151.55, "dataset_id": 306, "ticket": "113781", "actual_survived": 1, "boat": "Lifeboat 11 (Starboard)",
+        "insight": "An 11-month-old infant (0.92 years in the dataset). Amidst the confusion, his nursemaid Alice Cleaver carried him onto Lifeboat 11. His wealthy parents and 2-year-old sister Helen (#298) refused to board lifeboats, frantically searching the ship for their baby without knowing he was already safe. The rest of the family perished. Little Helen Allison was the only child from 1st or 2nd class who died on the Titanic."
     },
-    "🤺 Sir Cosmo Edmund Duff Gordon (1η Θέση - 49 ετών, 'The Money Boat', Λέμβος 1) [ID #600]": {
+    "🤺 Sir Cosmo Edmund Duff Gordon (1st Class - Age 49, 'The Money Boat', Boat 1) [ID #600]": {
         "name": "Sir Cosmo Edmund Duff Gordon", "age": 49, "sex": "male", "pclass": 1, "title": "Rare",
-        "nationality": "British (UK)", "embarked": "Cherbourg (C)", "companions": "Pair (2 άτομα - π.χ. με σύντροφο/φίλο)", "deck": "A", "side": "Starboard (Δεξιά - Murdoch)",
-        "fare": 56.93, "dataset_id": 600, "ticket": "PC 17485", "actual_survived": 1, "boat": "Έκτακτη Λέμβος Cutter 1 (Starboard)",
-        "insight": "Σκωτσέζος βαρονέτος και Ολυμπιονίκης ξιφασκίας. Επιβιβάστηκε με τη σύζυγό του Lady Duff Gordon στη Λέμβο 1 (χωρητικότητας 40 ατόμων), η οποία αναχώρησε με μόλις 12 επιβαίνοντες (7 μέλη πληρώματος και 5 επιβάτες 1ης θέσης). Ο Duff Gordon έδωσε φιλοδώρημα £5 σε κάθε ναύτη, προκαλώντας τεράστιο σκάνδαλο στον Τύπο («The Money Boat»), κατηγορούμενος ότι δωροδόκησε το πλήρωμα για να μην επιστρέψει να σώσει ναυαγούς."
+        "nationality": "British (UK)", "embarked": "Cherbourg (C)", "companions": "Pair (2 people - spouse/companion)", "deck": "A", "side": "Starboard (Right - Officer Murdoch)",
+        "fare": 56.93, "dataset_id": 600, "ticket": "PC 17485", "actual_survived": 1, "boat": "Emergency Cutter 1 (Starboard)",
+        "insight": "Scottish baronet and Olympic fencing silver medalist. Boarded Lifeboat 1 (capacity 40) with his wife Lady Duff Gordon; the boat pulled away with only 12 people (7 crew and 5 first-class passengers). Duff Gordon gifted £5 to each crewman, triggering a sensational press controversy ('The Money Boat') alleging they bribed the sailors not to return for swimmers."
     },
-    "☘️ Anna Sofia Turja (3η Θέση - 18 ετών, Φινλανδή Μετανάστρια, Λέμβος 15) [ID #678]": {
+    "☘️ Anna Sofia Turja (3rd Class - Age 18, Finnish Immigrant, Boat 15) [ID #678]": {
         "name": "Anna Sofia Turja", "age": 18, "sex": "female", "pclass": 3, "title": "Miss",
-        "nationality": "Scandinavian (Σουηδία/Νορβηγία)", "embarked": "Southampton (S)", "companions": "Solo (Μόνος/η)", "deck": "F", "side": "Starboard (Δεξιά - Murdoch)",
-        "fare": 9.84, "dataset_id": 678, "ticket": "4138", "actual_survived": 1, "boat": "Λέμβος 15 (Starboard)",
-        "insight": "18χρονη αγρότισσα από τη Φινλανδία που ταξίδευε ολομόναχη για το Οχάιο, χωρίς να γνωρίζει λέξη αγγλικά. Παρά το γεγονός ότι οι περισσότερες γυναίκες της 3ης θέσης εγκλωβίστηκαν στα χαμηλά καταστρώματα λόγω κλειδωμένων θυρών και γλώσσας, η Anna ακολούθησε μια ομάδα συμπατριωτών της που εντόπισε ανοιχτή έξοδο κινδύνου προς το Boat Deck. Επιβιβάστηκε στη Λέμβο 15 ακριβώς πριν αυτή κατέβει στη θάλασσα."
+        "nationality": "Scandinavian (Sweden/Norway)", "embarked": "Southampton (S)", "companions": "Solo (1 person)", "deck": "F", "side": "Starboard (Right - Officer Murdoch)",
+        "fare": 9.84, "dataset_id": 678, "ticket": "4138", "actual_survived": 1, "boat": "Lifeboat 15 (Starboard)",
+        "insight": "An 18-year-old Finnish farming girl traveling alone to Ohio without speaking a word of English. While many steerage women were trapped below by locked security gates and language barriers, Anna followed a small group of fellow passengers who located an unlocked emergency stairwell leading to the Boat Deck. She reached Lifeboat 15 moments before it was lowered."
     },
-    "👶 Master Michel Marcel Navratil (2η Θέση - 3 ετών, 'Ορφανά Τιτανικού', Λέμβος D) [ID #194]": {
+    "👶 Master Michel Marcel Navratil (2nd Class - Age 3, 'Titanic Orphans', Boat D) [ID #194]": {
         "name": "Master Michel Marcel Navratil", "age": 3, "sex": "male", "pclass": 2, "title": "Master",
-        "nationality": "French", "embarked": "Southampton (S)", "companions": "Small Group (3-4 άτομα - Οικογένεια)", "deck": "E", "side": "Port (Αριστερά - Lightoller)",
-        "fare": 26.0, "dataset_id": 194, "ticket": "230080", "actual_survived": 1, "boat": "Πτυσσόμενη D (Port)",
-        "insight": "3χρονο αγόρι. Ο πατέρας του Michel Navratil Sr. (#149) απήγαγε αυτόν και τον 2χρονο αδελφό του Edmond (#341) από τη μητέρα τους στη Γαλλία και ταξίδευε με ψευδώνυμο ('Louis Hoffman') για τη Νέα Υόρκη. Τη νύχτα του ναυαγίου, ο πατέρας κατάφερε να περάσει τα δύο νήπια στην τελευταία επιτυχημένη λέμβο (Πτυσσόμενη D), λέγοντας στον Michel: «Πες στη μητέρα σου ότι την αγαπούσα». Ο πατέρας πνίγηκε και τα αγόρια έγιναν διάσημα παγκοσμίως ως 'Τα Ορφανά του Τιτανικού' μέχρι να εντοπιστεί η μητέρα τους στη Νίκαια."
+        "nationality": "French", "embarked": "Southampton (S)", "companions": "Small Group (3-4 people - family)", "deck": "E", "side": "Port (Left - Officer Lightoller)",
+        "fare": 26.0, "dataset_id": 194, "ticket": "230080", "actual_survived": 1, "boat": "Collapsible D (Port)",
+        "insight": "A 3-year-old boy. His father Michel Navratil Sr. (#149) had taken him and his 2-year-old brother Edmond (#341) from their mother in France, traveling under the alias 'Louis Hoffman' to New York. On the night of the sinking, the father handed both toddlers into the final successful craft (Collapsible D), telling Michel: 'Tell your mother I loved her.' The father drowned, and the brothers became internationally known as the 'Titanic Orphans' until reunited with their mother in Nice."
     },
-    "💔 Master Harold Victor Goodwin (3η Θέση - 9 ετών, Οικογένεια 8 ατόμων) [ID #481]": {
+    "💔 Master Harold Victor Goodwin (3rd Class - Age 9, Family of 8) [ID #481]": {
         "name": "Master Harold Victor Goodwin", "age": 9, "sex": "male", "pclass": 3, "title": "Master",
-        "nationality": "British (UK)", "embarked": "Southampton (S)", "companions": "Large Group (5+ άτομα - Μεγάλη οικογένεια)", "deck": "G", "side": "Port (Αριστερά - Lightoller)",
-        "fare": 46.90, "dataset_id": 481, "ticket": "CA 2144", "actual_survived": 0, "boat": "Καμία (Χάθηκε στο ναυάγιο)",
-        "insight": "9χρονο αγόρι από το Fulham της Αγγλίας. Ταξίδευε με τους γονείς του και τα 5 αδέλφια του (οικογένεια 8 ατόμων). Λόγω του τεράστιου μεγέθους της οικογένειας (Ticket Group 5+), της θέσης τους βαθιά στο κύτος της 3ης θέσης και του αποκλεισμού των μεταναστών, κανένα από τα 8 μέλη της οικογένειας Goodwin δεν επιβίωσε. Το 19 μηνών αδελφάκι του, Sidney (#387), ανασύρθηκε από το πέλαγος και ταυτοποιήθηκε το 2007 μέσω DNA ως 'Το Άγνωστο Παιδί'."
+        "nationality": "British (UK)", "embarked": "Southampton (S)", "companions": "Large Group (5+ people - extended family)", "deck": "G", "side": "Port (Left - Officer Lightoller)",
+        "fare": 46.90, "dataset_id": 481, "ticket": "CA 2144", "actual_survived": 0, "boat": "None (Lost in disaster)",
+        "insight": "A 9-year-old boy from Fulham, England, emigrating with his parents and 5 siblings (family of 8). Due to their large family size (Ticket Group 5+), deep steerage quarters, and locked gates, not a single member of the Goodwin family survived. His 19-month-old brother Sidney (#387) was pulled from the ocean and identified via DNA in 2007 as 'The Unknown Child'."
     },
-    "🇬🇷 Απόστολος Χρονόπουλος (3η Θέση - 26 ετών, Μετανάστης από Άγιο Σώστη Μεσσηνίας) [ID #74]": {
-        "name": "Απόστολος Χρονόπουλος (Apostolos Chronopoulos)", "age": 26, "sex": "male", "pclass": 3, "title": "Mr",
-        "nationality": "Greek / Balkan", "embarked": "Cherbourg (C)", "companions": "Pair (2 άτομα - π.χ. με σύντροφο/φίλο)", "deck": "G", "side": "Port (Αριστερά - Lightoller)",
-        "fare": 14.45, "dataset_id": 74, "ticket": "2680", "actual_survived": 0, "boat": "Καμία (Χάθηκε στο ναυάγιο)",
-        "insight": "26χρονος Έλληνας εργάτης από τον Άγιο Σώστη Μεσσηνίας. Επιβιβάστηκε στο Χερβούργο (Cherbourg) με τον 19χρονο αδελφό του Δημήτριο και εισιτήριο #2680 για να αναζητήσουν μια καλύτερη ζωή στις ΗΠΑ. Και οι 4 Έλληνες επιβάτες του Τιτανικού (όλοι νέοι από το ίδιο χωριό) χάθηκαν τη νύχτα του ναυαγίου, εγκλωβισμένοι στα κατώτερα καταστρώματα χωρίς να κατανοούν τις αγγλόφωνες εντολές του πληρώματος."
+    "🇬🇷 Apostolos Chronopoulos (3rd Class - Age 26, Greek Immigrant) [ID #74]": {
+        "name": "Apostolos Chronopoulos", "age": 26, "sex": "male", "pclass": 3, "title": "Mr",
+        "nationality": "Greek / Balkan", "embarked": "Cherbourg (C)", "companions": "Pair (2 people - spouse/companion)", "deck": "G", "side": "Port (Left - Officer Lightoller)",
+        "fare": 14.45, "dataset_id": 74, "ticket": "2680", "actual_survived": 0, "boat": "None (Lost in disaster)",
+        "insight": "A 26-year-old Greek laborer from Agios Sostis, Messenia. He embarked at Cherbourg with his 19-year-old brother Demetrios on ticket #2680 seeking opportunities in America. All 4 documented Greek passengers aboard (young men from the same village) perished during the disaster, trapped in steerage unable to understand the crew's English commands."
     }
 }
 
@@ -264,7 +309,7 @@ def apply_preset(preset_key):
         st.session_state.p_boat = p.get("boat", "")
 
 def render_passenger_banner(screen_step):
-    p_name = st.session_state.p_name.strip() if st.session_state.p_name.strip() else "Επιβάτης Τιτανικού"
+    p_name = st.session_state.p_name.strip() if st.session_state.p_name.strip() else "Titanic Passenger"
     is_dataset_preset = st.session_state.get("p_dataset_id") is not None
     
     col_pinfo, col_pswitch = st.columns([3, 2], gap="medium")
@@ -273,11 +318,11 @@ def render_passenger_banner(screen_step):
         preset_keys = list(PRESETS.keys())
         cur_idx = preset_keys.index(st.session_state.last_preset) if st.session_state.last_preset in preset_keys else 0
         new_preset = st.selectbox(
-            "🎭 Αλλαγή Επιβάτη (Preset):",
+            "🎭 Select Passenger Persona:",
             preset_keys,
             index=cur_idx,
             key=f"banner_preset_switch_{screen_step}",
-            help="Μπορείτε να αλλάξετε επιβάτη ανά πάσα στιγμή από οποιαδήποτε οθόνη."
+            help="You can switch passenger profile anytime across all 5 steps."
         )
         if new_preset != st.session_state.last_preset:
             apply_preset(new_preset)
@@ -287,35 +332,35 @@ def render_passenger_banner(screen_step):
         badge_outcome = ""
         if is_dataset_preset:
             if st.session_state.p_actual_survived == 1:
-                badge_outcome = f'<span style="background: rgba(82, 183, 136, 0.25); color: #52b788; border: 1px solid #52b788; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.82rem;">✅ ΕΠΕΖΗΣΕ ({st.session_state.p_boat})</span>'
+                badge_outcome = f'<span style="background: rgba(82, 183, 136, 0.25); color: #52b788; border: 1px solid #52b788; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.82rem;">✅ SURVIVED ({st.session_state.p_boat})</span>'
             else:
-                badge_outcome = '<span style="background: rgba(230, 57, 70, 0.25); color: #e63946; border: 1px solid #e63946; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.82rem;">❌ ΧΑΘΗΚΕ ΣΤΟ ΝΑΥΑΓΙΟ</span>'
+                badge_outcome = '<span style="background: rgba(230, 57, 70, 0.25); color: #e63946; border: 1px solid #e63946; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.82rem;">❌ PERISHED IN DISASTER</span>'
 
         dataset_id_str = f" • <span style='color: #ffd166; font-weight: 700;'>Kaggle ID #{st.session_state.p_dataset_id}</span>" if is_dataset_preset else ""
-        ticket_str = f" • Εισιτήριο: <b>{st.session_state.p_ticket}</b>" if st.session_state.get("p_ticket") else ""
+        ticket_str = f" • Ticket: <b>{st.session_state.p_ticket}</b>" if st.session_state.get("p_ticket") else ""
         fare_val = float(st.session_state.get("p_fare", 13.0))
-        side_short = "Δεξιά (Starboard)" if "Starboard" in st.session_state.p_side else "Αριστερά (Port)"
+        side_short = "Starboard (Right)" if "Starboard" in st.session_state.p_side else "Port (Left)"
 
         render_html(f"""
         <div style="background: rgba(18, 30, 49, 0.85); border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 10px; padding: 12px 16px; margin-bottom: 10px;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                 <div style="font-size: 1.12rem; font-weight: 700; color: #ffffff;">
-                    👤 {p_name} <span style="font-size: 0.88rem; font-weight: normal; color: #a4b8d1;">({st.session_state.p_pclass}η Θέση • {st.session_state.p_age} ετών • {st.session_state.p_sex.capitalize()}{dataset_id_str})</span>
+                    👤 {p_name} <span style="font-size: 0.88rem; font-weight: normal; color: #a4b8d1;">(Class {st.session_state.p_pclass} • Age {st.session_state.p_age} • {st.session_state.p_sex.capitalize()}{dataset_id_str})</span>
                 </div>
                 <div>{badge_outcome}</div>
             </div>
             <div style="font-size: 0.84rem; color: #a0c4e2; margin-top: 6px;">
-                📍 <b>Κατάστρωμα:</b> Deck {st.session_state.p_deck} • <b>Πλευρά:</b> {side_short} • <b>Ναύλος:</b> £{fare_val:.2f}{ticket_str} • <b>Λιμάνι:</b> {st.session_state.p_embarked.split()[0]}
+                📍 <b>Deck:</b> Deck {st.session_state.p_deck} • <b>Side:</b> {side_short} • <b>Fare:</b> £{fare_val:.2f}{ticket_str} • <b>Port:</b> {st.session_state.p_embarked.split()[0]}
             </div>
         </div>
         """)
 
-    # Εμφάνιση Κάρτας Insights & Πραγματικών Δεδομένων από το Dataset σε ΟΛΕΣ τις οθόνες
+    # Display Dataset Insights & Historical Profile across all steps
     if is_dataset_preset and st.session_state.get("p_insight"):
         render_html(f"""
         <div style="background: rgba(18, 30, 49, 0.85); border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 12px; padding: 16px 20px; margin: 10px 0 20px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
             <div style="font-family: 'Cinzel', serif; font-size: 1.05rem; color: #ffd166; font-weight: 700; margin-bottom: 8px;">
-                📋 Ιστορικό Προφίλ & Insights Dataset: {p_name} (#{st.session_state.p_dataset_id})
+                📋 Historical Persona & Dataset Insights: {p_name} (#{st.session_state.p_dataset_id})
             </div>
             <div style="font-size: 0.92rem; line-height: 1.6; color: #e2e8f0; background: rgba(0,0,0,0.3); padding: 12px 16px; border-radius: 8px; border-left: 4px solid #d4af37;">
                 {st.session_state.p_insight}
@@ -347,11 +392,11 @@ if "p_nationality" not in st.session_state:
 if "p_embarked" not in st.session_state:
     st.session_state.p_embarked = "Southampton (S)"
 if "p_companions" not in st.session_state:
-    st.session_state.p_companions = "Solo (Μόνος/η)"
+    st.session_state.p_companions = "Solo (1 person)"
 if "p_deck" not in st.session_state:
     st.session_state.p_deck = "D"
 if "p_side" not in st.session_state:
-    st.session_state.p_side = "Starboard (Δεξιά - Murdoch)"
+    st.session_state.p_side = "Starboard (Right - Officer Murdoch)"
 if "p_fare" not in st.session_state:
     st.session_state.p_fare = 13.0
 if "p_dataset_id" not in st.session_state:
@@ -365,7 +410,7 @@ if "p_insight" not in st.session_state:
 if "p_boat" not in st.session_state:
     st.session_state.p_boat = ""
 if "last_preset" not in st.session_state:
-    st.session_state.last_preset = "⚙️ Προσαρμοσμένος Επιβάτης (Custom Passenger)"
+    st.session_state.last_preset = "⚙️ Custom Passenger (Create Your Own)"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # HEADER & APP TITLE
@@ -374,11 +419,11 @@ render_html("""
 <div style="text-align: center; margin-bottom: 25px;">
     <h1 style="color: #ffd166; margin-bottom: 5px; font-size: 2.3rem;">R.M.S. TITANIC</h1>
     <h3 style="color: #a0c4e2; font-weight: 300; font-size: 1.2rem; letter-spacing: 2px;">
-        ΔΙΑΔΡΑΣΤΙΚΗ ΕΜΠΕΙΡΙΑ ΠΡΟΣΟΜΟΙΩΣΗΣ, 3D ΜΟΝΤΕΛΟ & ΜΗΧΑΝΙΚΗ ΜΑΘΗΣΗ
+        INTERACTIVE 3D SIMULATION, NAVAL LOCATOR & MACHINE LEARNING
     </h3>
     <p style="color: #8da2ba; max-width: 800px; margin: 0 auto; font-size: 0.95rem;">
-        Ζήστε το ιστορικό ταξίδι της 14ης Απριλίου 1912. Επιλέξτε το προφίλ σας, εντοπίστε την καμπίνα σας στον 3D Τιτανικό, 
-        παρακολουθήστε την προσομοίωση του ναυαγίου και ανακαλύψτε τις πραγματικές πιθανότητες επιβίωσής σας.
+        Experience the fateful voyage of April 14, 1912. Choose or create a passenger, explore your cabin in 3D, 
+        simulate the sinking timeline, and uncover your survival probability using Machine Learning.
     </p>
 </div>
 """)
@@ -387,11 +432,11 @@ render_html("""
 # INTERACTIVE STEPPER NAVIGATION
 # ─────────────────────────────────────────────────────────────────────────────
 steps = [
-    ("1. 🎟️ Εισιτήριο & Ταυτότητα", 1),
-    ("2. 🚢 3D Θέση στο Πλοίο", 2),
-    ("3. ⏱️ Η Νύχτα του Ναυαγίου", 3),
-    ("4. 🔮 Πιθανότητα Επιβίωσης", 4),
-    ("5. 📊 Key Notes & Στατιστικά", 5),
+    ("1. 🎟️ Boarding Pass", 1),
+    ("2. 🚢 3D Ship Deck", 2),
+    ("3. ⏱️ Night Timeline", 3),
+    ("4. 🔮 Survival ML", 4),
+    ("5. 📊 Key Notes & Citations", 5),
 ]
 
 cols_nav = st.columns(5)
@@ -410,31 +455,31 @@ render_html("<hr style='border: 0; border-top: 1px solid rgba(212,175,55,0.25); 
 # SCREEN 1: BOARDING PASS & 1912 PERSONA SELECTION
 # ─────────────────────────────────────────────────────────────────────────────
 if st.session_state.current_step == 1:
-    st.markdown("### 🎟️ Βήμα 1: Έκδοση Εισιτηρίου & Ταυτότητα Επιβάτη (1912)")
-    st.info("💡 Επιλέξτε ένα έτοιμο ιστορικό πρότυπο (Preset) ή ρυθμίστε χειροκίνητα τα χαρακτηριστικά σας για να επιβιβαστείτε στον Τιτανικό.")
+    st.markdown("### 🎟️ Step 1: Boarding Pass & Passenger Identity (1912)")
+    st.info("💡 Select a historical passenger persona (Preset) or customize your attributes manually below to board the Titanic.")
 
-    # Archetype selector: ΜΟΝΟ πραγματικά ιστορικά πρόσωπα από τα αρχεία του Τιτανικού & Kaggle Dataset
+    # Persona Selector: Real verified passengers from Titanic historical records & Kaggle Dataset
     presets = PRESETS
     cur_p_idx = list(presets.keys()).index(st.session_state.last_preset) if st.session_state.last_preset in presets else 0
-    selected_preset = st.selectbox("🎭 Επιλέξτε Πραγματικό Ιστορικό Επιβάτη (ή φτιάξτε δικό σας):", list(presets.keys()), index=cur_p_idx)
+    selected_preset = st.selectbox("🎭 Select Historical Passenger Persona (or create custom):", list(presets.keys()), index=cur_p_idx)
     if selected_preset != st.session_state.last_preset:
         apply_preset(selected_preset)
         st.rerun()
 
-    # Εμφάνιση Κάρτας Insights & Πραγματικών Δεδομένων από το Dataset
+    # Render Dataset Insights & Real Historical Persona
     if st.session_state.get("p_dataset_id") is not None:
         if st.session_state.p_actual_survived == 1:
-            surv_badge = '<span style="background: rgba(82, 183, 136, 0.25); color: #52b788; border: 1px solid #52b788; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">✅ Πραγματική Έκβαση: ΕΠΕΖΗΣΕ (Survived: 1)</span>'
+            surv_badge = '<span style="background: rgba(82, 183, 136, 0.25); color: #52b788; border: 1px solid #52b788; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">✅ Historical Outcome: SURVIVED (Dataset: Survived = 1)</span>'
         else:
-            surv_badge = '<span style="background: rgba(230, 57, 70, 0.25); color: #e63946; border: 1px solid #e63946; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">❌ Πραγματική Έκβαση: ΧΑΘΗΚΕ (Survived: 0)</span>'
+            surv_badge = '<span style="background: rgba(230, 57, 70, 0.25); color: #e63946; border: 1px solid #e63946; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.85rem;">❌ Historical Outcome: PERISHED (Dataset: Survived = 0)</span>'
         
-        boat_badge = f'<div>🚣 <b>Λέμβος Διάσωσης:</b> <span style="color: #ffd166;">{st.session_state.p_boat}</span></div>' if st.session_state.p_boat else ""
+        boat_badge = f'<div>🚣 <b>Rescue Craft:</b> <span style="color: #ffd166;">{st.session_state.p_boat}</span></div>' if st.session_state.p_boat else ""
 
         render_html(f"""
         <div style="background: rgba(18, 30, 49, 0.85); border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 12px; padding: 18px 22px; margin: 15px 0 25px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
                 <div style="font-family: 'Cinzel', serif; font-size: 1.15rem; color: #ffd166; font-weight: 700; letter-spacing: 1px;">
-                    📋 Στοιχεία Πραγματικού Επιβάτη (Kaggle: yasserh/titanic-dataset)
+                    📋 Verified Passenger Record (Kaggle: yasserh/titanic-dataset)
                 </div>
                 <div>
                     {surv_badge}
@@ -442,9 +487,9 @@ if st.session_state.current_step == 1:
             </div>
             <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 14px; font-size: 0.88rem; color: #a4b8d1; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">
                 <div>🎫 <b>Kaggle PassengerId:</b> <span style="color: #ffd166; font-weight: 700;">#{st.session_state.p_dataset_id}</span></div>
-                <div>🎟️ <b>Αρ. Εισιτηρίου:</b> <span style="color: #ffffff; font-weight: 600;">{st.session_state.p_ticket}</span></div>
-                <div>💰 <b>Πραγματικός Ναύλος:</b> <span style="color: #48cae4; font-weight: 700;">£{st.session_state.p_fare:.2f}</span></div>
-                <div>⚓ <b>Λιμάνι:</b> <span style="color: #ffffff;">{st.session_state.p_embarked.split()[0]}</span></div>
+                <div>🎟️ <b>Ticket No:</b> <span style="color: #ffffff; font-weight: 600;">{st.session_state.p_ticket}</span></div>
+                <div>💰 <b>Historical Fare:</b> <span style="color: #48cae4; font-weight: 700;">£{st.session_state.p_fare:.2f}</span></div>
+                <div>⚓ <b>Port of Embarkation:</b> <span style="color: #ffffff;">{st.session_state.p_embarked.split()[0]}</span></div>
                 {boat_badge}
             </div>
             <div style="font-size: 0.94rem; line-height: 1.65; color: #e2e8f0; background: rgba(0,0,0,0.3); padding: 14px 18px; border-radius: 8px; border-left: 4px solid #d4af37;">
@@ -458,28 +503,28 @@ if st.session_state.current_step == 1:
     with col_form:
         c1, c2 = st.columns(2)
         with c1:
-            name_input = st.text_input("Ονοματεπώνυμο Επιβάτη:", value=st.session_state.p_name, placeholder="π.χ. John Smith ή το όνομά σας")
+            name_input = st.text_input("Passenger Full Name:", value=st.session_state.p_name, placeholder="e.g. John Smith or your name")
             st.session_state.p_name = name_input
 
             sex_opts = ["male", "female"]
-            sex_labels = {"male": "👨 Άνδρας / Αγόρι", "female": "👩 Γυναίκα / Κορίτσι"}
-            sex_input = st.selectbox("Βιολογικό Φύλο:", sex_opts, index=sex_opts.index(st.session_state.p_sex), format_func=lambda x: sex_labels[x])
+            sex_labels = {"male": "👨 Male / Boy", "female": "👩 Female / Girl"}
+            sex_input = st.selectbox("Biological Sex:", sex_opts, index=sex_opts.index(st.session_state.p_sex), format_func=lambda x: sex_labels[x])
             st.session_state.p_sex = sex_input
 
-            # Δυναμικό φιλτράρισμα τίτλων με βάση το επιλεγμένο βιολογικό φύλο
+            # Dynamic title filtering based on biological sex
             if sex_input == "male":
                 title_opts = ["Mr", "Master", "Rare"]
                 title_labels = {
-                    "Mr": "Mr. (Ενήλικος άνδρας ≥ 14 ετών)",
-                    "Master": "Master. (Ανήλικο αγόρι ≤ 14 ετών)",
-                    "Rare": "Τίτλος Ευγενείας / Αξιωματικός (Dr, Col, Rev, Sir)"
+                    "Mr": "Mr. (Adult male ≥ 14 yrs)",
+                    "Master": "Master. (Young boy ≤ 14 yrs)",
+                    "Rare": "Aristocratic Title / Officer (Dr, Col, Rev, Sir)"
                 }
             else:
                 title_opts = ["Miss", "Mrs", "Rare"]
                 title_labels = {
-                    "Mrs": "Mrs. (Έγγαμη γυναίκα)",
-                    "Miss": "Miss. (Άγαμη γυναίκα / ανήλικο κορίτσι)",
-                    "Rare": "Τίτλος Ευγενείας (Lady, Countess, Dona)"
+                    "Mrs": "Mrs. (Married woman)",
+                    "Miss": "Miss. (Unmarried woman / girl)",
+                    "Rare": "Aristocratic Title (Lady, Countess, Dona)"
                 }
 
             if st.session_state.p_title not in title_opts:
@@ -487,37 +532,37 @@ if st.session_state.current_step == 1:
             default_t_idx = title_opts.index(st.session_state.p_title)
 
             title_input = st.selectbox(
-                "Κοινωνικός Τίτλος (Title 1912):", 
+                "Social Title (1912):", 
                 title_opts, 
                 index=default_t_idx, 
                 format_func=lambda x: title_labels[x],
-                help="Οι διαθέσιμοι τίτλοι προσαρμόζονται αυτόματα στο επιλεγμένο βιολογικό φύλο."
+                help="Available titles adapt dynamically to selected biological sex."
             )
             st.session_state.p_title = title_input
 
         with c2:
-            # Δυναμικό όριο ηλικίας με βάση τον τίτλο: Αγόρι (Master) αυστηρά 1-14 έτη!
+            # Dynamic age limits based on title: Master strictly capped at 1-14 years!
             if title_input == "Master":
                 min_age, max_age = 1, 14
-                age_help = "Για ανήλικο αγόρι (Master), το όριο ηλικίας είναι αυστηρά έως 14 ετών."
+                age_help = "For young boys (Master), age is strictly capped at 14."
             elif title_input == "Mr":
                 min_age, max_age = 14, 80
-                age_help = "Για ενήλικο άνδρα (Mr.), η ηλικία είναι από 14 ετών και άνω."
+                age_help = "For adult men (Mr.), age starts from 14."
             elif title_input == "Mrs":
                 min_age, max_age = 15, 80
-                age_help = "Για έγγαμη γυναίκα (Mrs.), η ηλικία είναι από 15 ετών και άνω."
+                age_help = "For married women (Mrs.), age starts from 15."
             elif title_input == "Rare":
                 min_age, max_age = 18, 80
-                age_help = "Για τίτλους ευγενείας ή αξιωματικούς, η ηλικία είναι από 18 ετών και άνω."
+                age_help = "For noble titles or officers, age is 18 and above."
             else: # Miss
                 min_age, max_age = 1, 80
-                age_help = "Για Miss, η ηλικία μπορεί να είναι από 1 έως 80 ετών."
+                age_help = "For Miss, age can range from 1 to 80."
 
             cur_age_clamped = int(np.clip(st.session_state.p_age, min_age, max_age))
             st.session_state.p_age = cur_age_clamped
 
             age_input = st.slider(
-                "Ηλικία (σε έτη):", 
+                "Age (Years):", 
                 min_value=min_age, 
                 max_value=max_age, 
                 value=cur_age_clamped,
@@ -526,44 +571,44 @@ if st.session_state.current_step == 1:
             st.session_state.p_age = age_input
 
             pclass_opts = [1, 2, 3]
-            pclass_labels = {1: "🥇 1η Θέση (First Class - Deluxe)", 2: "🥈 2η Θέση (Second Class - Cabin)", 3: "🥉 3η Θέση (Third Class - Steerage)"}
-            pclass_input = st.selectbox("Κοινωνικοοικονομική Θέση (Class):", pclass_opts, index=pclass_opts.index(st.session_state.p_pclass), format_func=lambda x: pclass_labels[x])
+            pclass_labels = {1: "🥇 1st Class (First Class - Deluxe)", 2: "🥈 2nd Class (Second Class - Cabin)", 3: "🥉 3rd Class (Third Class - Steerage)"}
+            pclass_input = st.selectbox("Socioeconomic Class:", pclass_opts, index=pclass_opts.index(st.session_state.p_pclass), format_func=lambda x: pclass_labels[x])
             st.session_state.p_pclass = pclass_input
 
             nat_opts = [
-                "British (UK)", "Irish (Ιρλανδία)", "American (USA)", 
-                "Scandinavian (Σουηδία/Νορβηγία)", "Greek / Balkan", 
-                "Syrian / Lebanese (Οθωμανική Αυτοκρατορία)", "French"
+                "British (UK)", "Irish (Ireland)", "American (USA)", 
+                "Scandinavian (Sweden/Norway)", "Greek / Balkan", 
+                "Syrian / Lebanese (Ottoman Empire)", "French"
             ]
             nat_default_idx = nat_opts.index(st.session_state.p_nationality) if st.session_state.p_nationality in nat_opts else 0
-            nat_input = st.selectbox("Εθνικότητα / Χώρα Καταγωγής:", nat_opts, index=nat_default_idx)
+            nat_input = st.selectbox("Nationality / Country of Origin:", nat_opts, index=nat_default_idx)
             st.session_state.p_nationality = nat_input
 
-        st.markdown("#### 👥 Συνοδοί & Λιμάνι Επιβίβασης")
+        st.markdown("#### 👥 Companions & Embarkation Port")
         c3, c4 = st.columns(2)
         with c3:
             comp_opts = [
-                "Solo (Μόνος/η)",
-                "Pair (2 άτομα - π.χ. με σύντροφο/φίλο)",
-                "Small Group (3-4 άτομα - Οικογένεια)",
-                "Large Group (5+ άτομα - Μεγάλη οικογένεια)"
+                "Solo (1 person)",
+                "Pair (2 people - spouse/companion)",
+                "Small Group (3-4 people - family)",
+                "Large Group (5+ people - extended family)"
             ]
             comp_default_idx = comp_opts.index(st.session_state.p_companions) if st.session_state.p_companions in comp_opts else 0
-            comp_input = st.selectbox("Μέγεθος Ομάδας Εισιτηρίου (Ticket Group):", comp_opts, index=comp_default_idx)
+            comp_input = st.selectbox("Ticket Group Size:", comp_opts, index=comp_default_idx)
             st.session_state.p_companions = comp_input
 
         with c4:
             emb_opts = ["Southampton (S)", "Cherbourg (C)", "Queenstown (Q)"]
             emb_labels = {
-                "Southampton (S)": "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Southampton (Αγγλία - Αφετηρία)",
-                "Cherbourg (C)": "🇫🇷 Cherbourg (Γαλλία - Αριστοκράτες)",
-                "Queenstown (Q)": "🇮🇪 Queenstown / Cobh (Ιρλανδία - Μετανάστες)"
+                "Southampton (S)": "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Southampton (England - Origin)",
+                "Cherbourg (C)": "🇫🇷 Cherbourg (France - Aristocracy)",
+                "Queenstown (Q)": "🇮🇪 Queenstown / Cobh (Ireland - Emigrants)"
             }
             emb_default_idx = 0
             for idx, item in enumerate(emb_opts):
                 if st.session_state.p_embarked.startswith(item[:3]):
                     emb_default_idx = idx
-            emb_input = st.selectbox("Λιμάνι Επιβίβασης:", emb_opts, index=emb_default_idx, format_func=lambda x: emb_labels[x])
+            emb_input = st.selectbox("Port of Embarkation:", emb_opts, index=emb_default_idx, format_func=lambda x: emb_labels[x])
             st.session_state.p_embarked = emb_input
 
     with col_card:
@@ -581,7 +626,7 @@ if st.session_state.current_step == 1:
         port_short = st.session_state.p_embarked.split()[0]
         origin_short = st.session_state.p_nationality.split()[0]
         sex_capital = st.session_state.p_sex.capitalize()
-        pass_name_display = st.session_state.p_name.strip() if st.session_state.p_name.strip() else "Επιβάτης Τιτανικού"
+        pass_name_display = st.session_state.p_name.strip() if st.session_state.p_name.strip() else "Titanic Passenger"
         ticket_str = f" • TICKET: {st.session_state.p_ticket}" if st.session_state.get("p_ticket") else ""
 
         # Render Boarding Pass safely using render_html
@@ -617,7 +662,7 @@ if st.session_state.current_step == 1:
                 <div class="pass-label">TICKET FARE & VALUE</div>
                 <div style="display: flex; justify-content: space-between; align-items: baseline;">
                     <span style="font-size: 1.15rem; color: #ffd166; font-weight: 700;">£{fare_1912:.2f} (1912)</span>
-                    <span style="font-size: 0.85rem; color: #a4b8d1;">≈ €{fare_modern:,} (Αξία 2026)</span>
+                    <span style="font-size: 0.85rem; color: #a4b8d1;">≈ €{fare_modern:,} (2026 Equiv.)</span>
                 </div>
             </div>
             <div style="margin-top: 12px; font-size: 0.72rem; color: #8899aa; text-align: center; letter-spacing: 1px;">
@@ -628,15 +673,15 @@ if st.session_state.current_step == 1:
 
         # Historical context note
         if st.session_state.p_nationality == "Greek / Balkan":
-            st.caption("ℹ️ **Ιστορικό Σημείωμα (Έλληνες Επιβάτες)**: Στον Τιτανικό επέβαιναν ακριβώς 4 καταγεγραμμένοι Έλληνες μετανάστες, όλοι από το χωριό Άγιος Σώστης Μεσσηνίας: ο Απόστολος Χρονόπουλος (26 ετών - καταγεγραμμένος ως επιβάτης #74 στο Kaggle dataset), ο αδελφός του Δημήτριος (19 ετών), ο Βασίλειος Κατάβελος (19 ετών) και ο Παναγιώτης Λυμπερόπουλος (30 ετών). Επιβιβάστηκαν όλοι στο Χερβούργο (Cherbourg) στην 3η θέση και δυστυχώς χάθηκαν και οι 4 στο ναυάγιο.")
+            st.caption("ℹ️ **Historical Note (Greek Passengers)**: Exactly 4 Greek emigrants were aboard the Titanic, all from the village of Agios Sostis, Messenia: Apostolos Chronopoulos (age 26 - passenger #74 in the Kaggle dataset), his brother Demetrios (age 19), Vasilios Katavelos (age 19), and Panagiotis Lymperopoulos (age 30). All 4 traveled in 3rd class and tragically perished in the disaster.")
         elif st.session_state.p_pclass == 3:
-            st.caption("ℹ️ **Ιστορικό Σημείωμα 3ης Θέσης**: Οι επιβάτες 3ης θέσης έπρεπε να περάσουν από ιατρικό έλεγχο για τράχωμα και ψείρες πριν επιβιβαστούν, ώστε να μην απορριφθούν από τις αρχές του Ellis Island στις ΗΠΑ.")
+            st.caption("ℹ️ **Historical Note on Steerage**: 3rd-class passengers underwent strict medical inspections for trachoma and contagious diseases at Southampton to comply with US immigration quarantine rules.")
 
     # Navigation buttons
     st.markdown("<br>", unsafe_allow_html=True)
     _, next_col = st.columns([4, 1])
     with next_col:
-        if st.button("Επόμενο: 3D Θέση στο Πλοίο ➡️", type="primary", use_container_width=True):
+        if st.button("Next: 3D Ship Deck Locator ➡️", type="primary", use_container_width=True):
             st.session_state.current_step = 2
             st.rerun()
 
@@ -644,41 +689,41 @@ if st.session_state.current_step == 1:
 # SCREEN 2: 3D SHIP VISUALIZATION & CABIN PLACEMENT
 # ─────────────────────────────────────────────────────────────────────────────
 elif st.session_state.current_step == 2:
-    st.markdown("### 🚢 Βήμα 2: Προσομοίωση Θέσης & Καμπίνας στον 3D Τιτανικό")
+    st.markdown("### 🚢 Step 2: Cabin Location & 3D Interactive Vessel Model")
     st.markdown("""
-    Δείτε πού βρισκόταν η καμπίνα σας σε τρισδιάστατο περιβάλλον. Η πλευρά του πλοίου (**Αριστερά / Port** vs **Δεξιά / Starboard**) 
-    και το κατάστρωμα καθόρισαν σε τεράστιο βαθμό την πρόσβαση στις σωσίβιες λέμβους.
+    Inspect where your cabin was situated within the ship structure. Ship side (**Port / Left** vs. **Starboard / Right**) 
+    and deck level decisively governed access to the boat deck during the emergency.
     """)
 
-    # Εμφάνιση του ενεργού επιβάτη & των ιστορικών insights του dataset
+    # Render active passenger banner & historical dataset insights
     render_passenger_banner(2)
 
     c_inputs, c_view = st.columns([1, 2], gap="large")
 
     with c_inputs:
-        st.markdown("#### ⚓ Επιλογή Καταστρώματος & Πλευράς")
+        st.markdown("#### ⚓ Select Deck & Ship Side")
         
         # Valid decks by class
         if st.session_state.p_pclass == 1:
             deck_options = ["A", "B", "C"]
-            deck_help = "Καταστρώματα A-C: Πολυτελείς σουίτες, άμεση πρόσβαση στο Boat Deck και τη Μεγάλη Σκάλα."
+            deck_help = "Decks A-C: Luxury staterooms with immediate access to Boat Deck and Grand Staircase."
         elif st.session_state.p_pclass == 2:
             deck_options = ["D", "E"]
-            deck_help = "Καταστρώματα D-E: Μεσαίο ύψος, τραπεζαρία 2ης θέσης, 3 καταστρώματα κάτω από τις λέμβους."
+            deck_help = "Decks D-E: Mid-level decks, 2nd-class dining saloon, 3 flights down from lifeboats."
         else:
             deck_options = ["E", "F", "G"]
-            deck_help = "Καταστρώματα E-G: Κάτω από την ίσαλο γραμμή ή στο κύτος. Λαβύρινθος από διαδρόμους και στεγανές θύρες."
+            deck_help = "Decks E-G: Deep near or below the waterline. Complex labyrinth of narrow corridors and watertight bulkheads."
 
         current_deck = st.session_state.p_deck if st.session_state.p_deck in deck_options else deck_options[0]
-        selected_deck = st.selectbox(f"Κατάστρωμα (Deck) για {st.session_state.p_pclass}η Θέση:", deck_options, index=deck_options.index(current_deck), help=deck_help)
+        selected_deck = st.selectbox(f"Deck Level for Class {st.session_state.p_pclass}:", deck_options, index=deck_options.index(current_deck), help=deck_help)
         st.session_state.p_deck = selected_deck
 
         side_options = [
-            "Port (Αριστερά - Lightoller)", 
-            "Starboard (Δεξιά - Murdoch)"
+            "Port (Left - Officer Lightoller)", 
+            "Starboard (Right - Officer Murdoch)"
         ]
         side_idx = 1 if "Starboard" in st.session_state.p_side else 0
-        selected_side = st.radio("Πλευρά του Πλοίου (Ship Side):", side_options, index=side_idx)
+        selected_side = st.radio("Ship Side & Officer Protocol:", side_options, index=side_idx)
         st.session_state.p_side = selected_side
 
         is_starboard = "Starboard" in selected_side
@@ -692,12 +737,12 @@ elif st.session_state.current_step == 2:
 
         render_html(f"""
         <div class="info-card">
-            <div style="font-weight: 700; color: #ffd166; margin-bottom: 8px;">📍 Στοιχεία Τοποθεσίας Καμπίνας</div>
-            <div>• <b>Επιβάτης:</b> <span style="color: #ffffff; font-weight: 700;">{st.session_state.p_name}</span> ({st.session_state.p_pclass}η Θέση, {st.session_state.p_age} ετών)</div>
-            <div>• <b>Κατάστρωμα:</b> Deck {selected_deck}</div>
-            <div>• <b>Υψόμετρο από Ίσαλο:</b> {altitude:.1f} μέτρα</div>
-            <div>• <b>Σκάλες μέχρι το Boat Deck:</b> {flights} επίπεδα ({meters_to_boats:.1f} m)</div>
-            <div>• <b>Αξιωματικός Υπεύθυνος:</b> <span class="highlight-cyan">{officer_name}</span></div>
+            <div style="font-weight: 700; color: #ffd166; margin-bottom: 8px;">📍 Cabin Spatial Parameters</div>
+            <div>• <b>Passenger:</b> <span style="color: #ffffff; font-weight: 700;">{st.session_state.p_name}</span> (Class {st.session_state.p_pclass}, Age {st.session_state.p_age})</div>
+            <div>• <b>Deck:</b> Deck {selected_deck}</div>
+            <div>• <b>Elevation above Waterline:</b> {altitude:.1f} m</div>
+            <div>• <b>Stair Flights to Boat Deck:</b> {flights} flights ({meters_to_boats:.1f} m)</div>
+            <div>• <b>Commanding Officer:</b> <span class="highlight-cyan">{officer_name}</span></div>
         </div>
         """)
 
@@ -705,31 +750,31 @@ elif st.session_state.current_step == 2:
 
         if not is_starboard:
             if is_woman_or_child:
-                st.success("✅ **Port Side (Αριστερά - Lightoller)**: Εξαιρετικά ευνοϊκή θέση για εσάς! Ο Υποπλοίαρχος Lightoller εφάρμοσε αυστηρά το *'Γυναίκες και παιδιά ΜΟΝΟΝ'*. Σας δίνεται απόλυτη προτεραιότητα επιβίβασης στις σωσίβιες λέμβους έναντι όλων των ανδρών.")
+                st.success("✅ **Port Side (Left - Officer Lightoller)**: Highly favorable side for women and children! Lightoller strictly enforced 'Women and children ONLY', granting absolute priority to females and infants.")
             else:
-                st.error("⚠️ **Port Side (Αριστερά - Lightoller)**: Εξαιρετικά επικίνδυνη πλευρά για ενήλικο άνδρα! Ο Lightoller εφάρμοσε το *'Γυναίκες και παιδιά ΜΟΝΟΝ'* και αρνούνταν την επιβίβαση σε άνδρες ακόμα κι όταν οι λέμβοι έφευγαν με δεκάδες κενές θέσεις.")
+                st.error("⚠️ **Port Side (Left - Officer Lightoller)**: Extremely dangerous side for adult males! Lightoller rigidly enforced 'Women and children ONLY', turning away men even when lifeboats were lowered half empty.")
         else:
             if is_woman_or_child:
-                st.info("ℹ️ **Starboard Side (Δεξιά - Murdoch)**: Ο Υποπλοίαρχος Murdoch εφάρμοσε το *'Γυναίκες και παιδιά ΠΡΩΤΑ'*. Έχετε άμεση προτεραιότητα, αλλά επιτρέπεται και σε άνδρες να επιβιβαστούν αν υπάρχουν κενά καθίσματα.")
+                st.info("ℹ️ **Starboard Side (Right - Officer Murdoch)**: Murdoch followed 'Women and children FIRST'. You have top priority, but men may also step aboard if empty seats remain.")
             else:
-                st.success("✅ **Starboard Side (Δεξιά - Murdoch)**: Η πιο ευνοϊκή πλευρά για άνδρα επιβάτη! Ο Murdoch εφάρμοσε το *'Γυναίκες και παιδιά ΠΡΩΤΑ'*. Αν δεν υπήρχαν γυναίκες στην ουρά, επέτρεπε σε άνδρες να επιβιβαστούν, αυξάνοντας σημαντικά τις πιθανότητες σωτηρίας σας.")
+                st.success("✅ **Starboard Side (Right - Officer Murdoch)**: Most favorable side for male passengers! When no women were waiting, Murdoch permitted men to board empty seats, boosting male survival odds (~37%).")
 
     with c_view:
         # Camera angle view selector
         cam_choice = st.radio(
-            "🎥 Οπτική Γωνία 3D Κάμερας:",
-            ["Ισομετρική 3D (Default)", "Πλάγια Starboard (Δεξιά)", "Πλάγια Port (Αριστερά)", "Κάτοψη (Top)", "Πλώρη (Bow)"],
+            "🎥 3D Camera Perspective:",
+            ["Isometric 3D (Default)", "Starboard Profile (Right)", "Port Profile (Left)", "Overhead View (Top)", "Bow View (Front)"],
             horizontal=True
         )
 
         cam_map = {
-            "Ισομετρική 3D (Default)": dict(eye=dict(x=2.0, y=1.8, z=1.2), center=dict(x=0, y=0, z=-0.05)),
-            "Πλάγια Starboard (Δεξιά)": dict(eye=dict(x=0.05, y=3.1, z=0.45), center=dict(x=0, y=0, z=-0.05)),
-            "Πλάγια Port (Αριστερά)": dict(eye=dict(x=0.05, y=-3.1, z=0.45), center=dict(x=0, y=0, z=-0.05)),
-            "Κάτοψη (Top)": dict(eye=dict(x=0.0, y=0.0, z=3.4), center=dict(x=0, y=0, z=0), up=dict(x=1, y=0, z=0)),
-            "Πλώρη (Bow)": dict(eye=dict(x=2.9, y=0.1, z=0.6), center=dict(x=0, y=0, z=-0.05))
+            "Isometric 3D (Default)": dict(eye=dict(x=2.0, y=1.8, z=1.2), center=dict(x=0, y=0, z=-0.05)),
+            "Starboard Profile (Right)": dict(eye=dict(x=0.05, y=3.1, z=0.45), center=dict(x=0, y=0, z=-0.05)),
+            "Port Profile (Left)": dict(eye=dict(x=0.05, y=-3.1, z=0.45), center=dict(x=0, y=0, z=-0.05)),
+            "Overhead View (Top)": dict(eye=dict(x=0.0, y=0.0, z=3.4), center=dict(x=0, y=0, z=0), up=dict(x=1, y=0, z=0)),
+            "Bow View (Front)": dict(eye=dict(x=2.9, y=0.1, z=0.6), center=dict(x=0, y=0, z=-0.05))
         }
-        current_cam = cam_map.get(cam_choice, cam_map["Ισομετρική 3D (Default)"])
+        current_cam = cam_map.get(cam_choice, cam_map["Isometric 3D (Default)"])
 
         # High-Fidelity 3D Titanic Model
         fig3d = go.Figure()
@@ -754,12 +799,12 @@ elif st.session_state.current_step == 2:
         fig3d.add_trace(go.Surface(
             x=X_u, y=Y_u_stbd, z=Z_u,
             colorscale=[[0, '#111720'], [1, '#111720']],
-            showscale=False, opacity=0.96, name='Κύτος (Starboard)', hoverinfo='skip'
+            showscale=False, opacity=0.96, name='Hull (Starboard)', hoverinfo='skip'
         ))
         fig3d.add_trace(go.Surface(
             x=X_u, y=-Y_u_stbd, z=Z_u,
             colorscale=[[0, '#111720'], [1, '#111720']],
-            showscale=False, opacity=0.96, name='Κύτος (Port)', hoverinfo='skip'
+            showscale=False, opacity=0.96, name='Hull (Port)', hoverinfo='skip'
         ))
 
         # Lower Keel / Underbody (Red Oxide Boot-topping)
@@ -773,12 +818,12 @@ elif st.session_state.current_step == 2:
         fig3d.add_trace(go.Surface(
             x=X_l, y=Y_l_stbd, z=Z_l,
             colorscale=[[0, '#781818'], [1, '#781818']],
-            showscale=False, opacity=0.96, name='Ίσαλος / Καρίνα', hoverinfo='skip'
+            showscale=False, opacity=0.96, name='Keel / Waterline', hoverinfo='skip'
         ))
         fig3d.add_trace(go.Surface(
             x=X_l, y=-Y_l_stbd, z=Z_l,
             colorscale=[[0, '#781818'], [1, '#781818']],
-            showscale=False, opacity=0.96, name='Ίσαλος / Καρίνα', hoverinfo='skip'
+            showscale=False, opacity=0.96, name='Keel / Waterline', hoverinfo='skip'
         ))
 
         # Superstructure Walls (White Deckhouse, x 18 to 72)
@@ -790,12 +835,12 @@ elif st.session_state.current_step == 2:
         fig3d.add_trace(go.Surface(
             x=X_s, y=Y_s, z=Z_s,
             colorscale=[[0, '#edf2f7'], [1, '#edf2f7']],
-            showscale=False, opacity=0.88, name='Υπερκατασκευή', hoverinfo='skip'
+            showscale=False, opacity=0.88, name='Superstructure', hoverinfo='skip'
         ))
         fig3d.add_trace(go.Surface(
             x=X_s, y=-Y_s, z=Z_s,
             colorscale=[[0, '#edf2f7'], [1, '#edf2f7']],
-            showscale=False, opacity=0.88, name='Υπερκατασκευή', hoverinfo='skip'
+            showscale=False, opacity=0.88, name='Superstructure', hoverinfo='skip'
         ))
 
         # Teak Wood Boat Deck (Top, z 18.5, x 18 to 72, y -7.8 to 7.8)
@@ -805,14 +850,14 @@ elif st.session_state.current_step == 2:
         fig3d.add_trace(go.Surface(
             x=XD, y=YD, z=np.full_like(XD, 18.5),
             colorscale=[[0, '#c2a67e'], [1, '#c2a67e']],
-            showscale=False, opacity=0.92, name='Boat Deck (Ξύλινο Κατάστρωμα)', hoverinfo='skip'
+            showscale=False, opacity=0.92, name='Boat Deck (Teak Planking)', hoverinfo='skip'
         ))
 
         # Navigating Bridge (x 72, wings extending to y +- 10.5)
         fig3d.add_trace(go.Scatter3d(
             x=[72, 72, 72, 72, 72], y=[-10.5, -7.8, 0, 7.8, 10.5], z=[20.2, 20.2, 20.8, 20.2, 20.2],
             mode='lines+markers', line=dict(color='#ffffff', width=5),
-            marker=dict(size=4, color='#ffd166'), name='Γέφυρα Πλοίου (Bridge)'
+            marker=dict(size=4, color='#ffd166'), name='Navigating Bridge'
         ))
 
         # 4 Iconic Raked Funnels (with 10-degree backward tilt)
@@ -827,26 +872,26 @@ elif st.session_state.current_step == 2:
                 x=X_fun, y=Y_fun, z=Z_fun,
                 colorscale=[[0, '#c87d20'], [0.78, '#c87d20'], [0.78, '#141414'], [1, '#141414']],
                 showscale=False, opacity=0.98,
-                name=f'Καπνοδόχος {f_idx+1}', hoverinfo='skip'
+                name=f'Funnel {f_idx+1}', hoverinfo='skip'
             ))
 
         # Fore and Aft Masts with Crow's Nest
         fig3d.add_trace(go.Scatter3d(
             x=[86, 83], y=[0, 0], z=[12, 36],
-            mode='lines', line=dict(color='#d0dbe8', width=3), name='Πλωραίο Κατάρτι'
+            mode='lines', line=dict(color='#d0dbe8', width=3), name='Fore Mast'
         ))
         fig3d.add_trace(go.Scatter3d(
             x=[84.5], y=[0], z=[27],
             mode='markers+text', marker=dict(size=6, color='#ffd166', symbol='diamond'),
-            text=["Παρατηρητήριο (Crow's Nest)"], textposition='top right', name='Παρατηρητήριο'
+            text=["Crow's Nest"], textposition='top right', name="Crow's Nest"
         ))
         fig3d.add_trace(go.Scatter3d(
             x=[10, 8], y=[0, 0], z=[12, 33],
-            mode='lines', line=dict(color='#d0dbe8', width=3), name='Πρυμναίο Κατάρτι'
+            mode='lines', line=dict(color='#d0dbe8', width=3), name='Main Mast'
         ))
         fig3d.add_trace(go.Scatter3d(
             x=[83, 8], y=[0, 0], z=[36, 33],
-            mode='lines', line=dict(color='#ffd166', width=1.5, dash='dash'), name='Κεραία Ασυρμάτου (Marconi)'
+            mode='lines', line=dict(color='#ffd166', width=1.5, dash='dash'), name='Marconi Aerial Rigging'
         ))
 
         # Lifeboats along Boat Deck edge
@@ -858,12 +903,12 @@ elif st.session_state.current_step == 2:
         fig3d.add_trace(go.Scatter3d(
             x=lb_x, y=lb_y_stbd, z=lb_z,
             mode='markers', marker=dict(size=6, color='#52b788', symbol='diamond'),
-            name='Σωσίβιες Λέμβοι Starboard (Murdoch)'
+            name='Starboard Lifeboats (Murdoch)'
         ))
         fig3d.add_trace(go.Scatter3d(
             x=lb_x, y=lb_y_port, z=lb_z,
             mode='markers', marker=dict(size=6, color='#48cae4', symbol='diamond'),
-            name='Σωσίβιες Λέμβοι Port (Lightoller)'
+            name='Port Lifeboats (Lightoller)'
         ))
 
         # Ocean Waterline
@@ -872,7 +917,7 @@ elif st.session_state.current_step == 2:
         fig3d.add_trace(go.Mesh3d(
             x=x_sea, y=y_sea, z=[3.5, 3.5, 3.5, 3.5],
             i=[0, 0], j=[1, 2], k=[2, 3],
-            color='#071829', opacity=0.45, name='Ωκεανός (Ίσαλος)', hoverinfo='skip'
+            color='#071829', opacity=0.45, name='Calm Ocean Waterline', hoverinfo='skip'
         ))
 
         # USER CABIN LOCATION BEACON
@@ -885,26 +930,26 @@ elif st.session_state.current_step == 2:
         fig3d.add_trace(go.Scatter3d(
             x=[user_x, user_x], y=[user_y, user_y], z=[user_z, 35],
             mode='lines', line=dict(color='#ffd166', width=4, dash='dot'),
-            name='Ακτίνα Εντοπισμού Καμπίνας'
+            name='Cabin Vertical Beacon'
         ))
         # Glowing marker
-        display_label = st.session_state.p_name.strip() if st.session_state.p_name.strip() else "ΕΣΕΙΣ"
+        display_label = st.session_state.p_name.strip() if st.session_state.p_name.strip() else "YOU"
         fig3d.add_trace(go.Scatter3d(
             x=[user_x], y=[user_y], z=[user_z],
             mode='markers+text',
             marker=dict(size=14, color='#ffd166', line=dict(color='#ffffff', width=2), symbol='circle'),
-            text=[f'📍 Η ΚΑΜΠΙΝΑ ΣΑΣ ({display_label})'],
+            text=[f'📍 YOUR CABIN ({display_label})'],
             textposition='top center',
             textfont=dict(color='#ffd166', size=13),
-            name='Η Καμπίνα σας'
+            name='Your Cabin Beacon'
         ))
 
         fig3d.update_layout(
             scene=dict(
                 bgcolor='#08101a',
-                xaxis=dict(title='← Πρύμνη (0) | Μήκος Πλοίου | Πλώρη (100) →', showgrid=True, gridcolor='#182638', zeroline=False),
+                xaxis=dict(title='← Stern (Aft 0) | Ship Length | Bow (Fore 100) →', showgrid=True, gridcolor='#182638', zeroline=False),
                 yaxis=dict(title='Port ← | → Starboard', showgrid=True, gridcolor='#182638', zeroline=False),
-                zaxis=dict(title='Ύψος (Καταστρώματα)', showgrid=True, gridcolor='#182638', zeroline=False),
+                zaxis=dict(title='Height (Decks)', showgrid=True, gridcolor='#182638', zeroline=False),
                 aspectratio=dict(x=3.5, y=1.3, z=0.9),
                 camera=current_cam
             ),
@@ -919,96 +964,96 @@ elif st.session_state.current_step == 2:
     # Navigation buttons
     col_prev, _, col_next = st.columns([1, 3, 1])
     with col_prev:
-        if st.button("⬅️ Πίσω: Εισιτήριο", use_container_width=True):
+        if st.button("⬅️ Back: Boarding Pass", use_container_width=True):
             st.session_state.current_step = 1
             st.rerun()
     with col_next:
-        if st.button("Επόμενο: Προσομοίωση Ναυαγίου ➡️", type="primary", use_container_width=True):
+        if st.button("Next: Sinking Timeline Simulation ➡️", type="primary", use_container_width=True):
             st.session_state.current_step = 3
             st.rerun()
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SCREEN 3: TIMELINE SIMULATION ("ΣΑΝ ΒΙΝΤΕΟ")
+# SCREEN 3: TIMELINE SIMULATION (DYNAMIC PLAYBACK)
 # ─────────────────────────────────────────────────────────────────────────────
 elif st.session_state.current_step == 3:
-    st.markdown("### ⏱️ Βήμα 3: Η Νύχτα της 14ης Απριλίου 1912 - Χρονολόγιο & Προσομοίωση")
+    st.markdown("### ⏱️ Step 3: Night of April 14, 1912 — Interactive Sinking Timeline")
     st.markdown("""
-    Παρακολουθήστε την εξέλιξη της βύθισης λεπτό προς λεπτό. Μετακινήστε τον διαδραστικό χρονοδιακόπτη 
-    για να δείτε πώς εξελισσόταν η κατάσταση στην καμπίνα σας και στις σωσίβιες λέμβους.
+    Follow the progression of the sinking minute-by-minute. Adjust the interactive slider 
+    to observe flooding dynamics at your cabin and the launch of lifeboats on your side of the ship.
     """)
 
-    # Εμφάνιση του ενεργού επιβάτη & των ιστορικών insights του dataset
+    # Render active passenger banner & historical dataset insights
     render_passenger_banner(3)
 
     timeline_events = [
         {
             "time": "23:40",
-            "title": "🧊 Σύγκρουση με το Παγόβουνο (Starboard Bow)",
-            "desc": "Ο παρατηρητής Frederick Fleet χτυπά την καμπάνα 3 φορές: 'Iceberg right ahead!'. Ο Τιτανικός ξύνει το παγόβουνο στη δεξιά πλευρά (Starboard). Σχίζονται 6 στεγανά διαμερίσματα. Εισροή νερού: 7 τόνοι το δευτερόλεπτο.",
-            "water_level": "Κύτος / Διαμερίσματα λεβήτων 5 & 6",
-            "active_decks": "Tank Top (Κύτος)",
-            "urgency": "Ήρεμη (Οι περισσότεροι επιβάτες δεν ένιωσαν παρά έναν ελαφρύ κραδασμό)",
+            "title": "🧊 Collision with Iceberg (Starboard Bow)",
+            "desc": "Lookout Frederick Fleet rings the bell 3 times: 'Iceberg right ahead!'. Titanic grazes the iceberg along her starboard hull, opening seams across 6 forward compartments. Water rushes in at 7 tons per second.",
+            "water_level": "Tank Top / Boiler Rooms 5 & 6",
+            "active_decks": "Tank Top / Hold",
+            "urgency": "Calm (Most passengers felt only a faint shudder or vibration)",
             "cabins_flooded": ["Tank Top"]
         },
         {
             "time": "00:05",
-            "title": "📋 Εντολή Εκκένωσης & Προετοιμασία Λέμβων",
-            "desc": "Ο ναυπηγός Thomas Andrews υπολογίζει ότι το πλοίο έχει το πολύ 1.5 - 2 ώρες ζωής. Ο Καπετάνιος Smith διατάζει αποκάλυψη των 20 σωσιβίων λέμβων και εκπομπή σήματος κινδύνου CQD / SOS. Η συνολική χωρητικότητα των λέμβων είναι 1.178 άτομα για 2.224 επιβαίνοντες.",
-            "water_level": "Κατάστρωμα G & Ταχυδρομείο",
+            "title": "📋 Evacuation Order & Uncovering Lifeboats",
+            "desc": "Shipbuilder Thomas Andrews calculates the ship has at most 1.5–2 hours before foundering. Captain Smith orders lifeboats swung out and wireless operators send CQD / SOS distress calls. Capacity is 1,178 for 2,224 people aboard.",
+            "water_level": "Orlop Deck, Deck G & Mail Room",
             "active_decks": "G Deck",
-            "urgency": "Μέτρια (Ανακοινώσεις στα σαλόνια 1ης & 2ης θέσης, σύγχυση στην 3η θέση)",
+            "urgency": "Moderate (Announcements in 1st/2nd class lounges; uncertainty in steerage)",
             "cabins_flooded": ["Tank Top", "G"]
         },
         {
             "time": "00:45",
-            "title": "🛶 Καθέλκυση Πρώτης Λέμβου (No. 7 - Starboard)",
-            "desc": "Ο Υποπλοίαρχος Murdoch καθελκύει τη Λέμβο 7 στη δεξιά πλευρά με μόλις 28 επιβάτες (χωρητικότητα 65!). Οι επιβάτες διστάζουν να εγκαταλείψουν το φωτισμένο θερμαινόμενο πλοίο για τον παγωμένο ωκεανό. Στην αριστερή πλευρά (Port), ο Lightoller ξεκινά να επιβιβάζει αυστηρά μόνο γυναίκες και παιδιά.",
-            "water_level": "Κατάστρωμα F (Καμπίνες 3ης θέσης)",
+            "title": "🛶 First Lifeboat Lowered (No. 7 - Starboard)",
+            "desc": "First Officer Murdoch lowers Lifeboat 7 on starboard carrying only 28 people (rated capacity: 65!). Reluctant passengers hesitate to trade the warm, brightly lit liner for the pitch-black freezing ocean. On Port, Lightoller admits only women and children.",
+            "water_level": "Deck F (Steerage Berth & Squash Court)",
             "active_decks": "F Deck",
-            "urgency": "Υψηλή (Εκτόξευση λευκών φωτοβολίδων κινδύνου στον νυχτερινό ουρανό)",
+            "urgency": "High (White distress rockets fired into the clear freezing night sky)",
             "cabins_flooded": ["Tank Top", "G", "F"]
         },
         {
             "time": "01:15",
-            "title": "🚪 Πλημμύρα στα Κάτω Καταστρώματα & Παγίδευση 3ης Θέσης",
-            "desc": "Το νερό κατακλύζει το Κατάστρωμα E. Οι επιβάτες 3ης θέσης συναντούν κλειδωμένες σιδερένιες θύρες και λαβυρινθώδεις διαδρόμους χωρίς σήμανση στη γλώσσα τους. Μόνο λίγοι καταφέρνουν να βρουν έξοδο κινδύνου προς τα επάνω καταστρώματα.",
-            "water_level": "Κατάστρωμα E & Σκάλες",
+            "title": "🚪 Lower Decks Flooding & Steerage Bottlenecks",
+            "desc": "Seawater floods Deck E. Steerage passengers confront locked security gates and unlit, unfamiliar gangways. Only those finding open crew emergency ladders reach the higher decks.",
+            "water_level": "Deck E (Lower passenger decks)",
             "active_decks": "E Deck",
-            "urgency": "Κρίσιμη (Κλίση της πλώρης προς τα εμπρός, τα φώτα αρχίζουν να τρεμοπαίζουν)",
+            "urgency": "Critical (Bow trims heavily forward, incandescent lights flicker)",
             "cabins_flooded": ["Tank Top", "G", "F", "E"]
         },
         {
             "time": "01:40",
-            "title": "⚡ Πανικός στο Boat Deck & Διαχωρισμός Οικογενειών",
-            "desc": "Η πλώρη βυθίζεται ραγδαία. Καθελκύεται η πτυσσόμενη Λέμβος C με 71 άτομα (στην οποία επιβιβάζεται και ο Bruce Ismay). Στην αριστερή πλευρά (Port), ο Lightoller απειλεί με περίστροφο άνδρες που προσπαθούν να πλησιάσουν τις λέμβους. Στη δεξιά (Starboard), ο Murdoch γεμίζει τις τελευταίες λέμβους.",
-            "water_level": "Κατάστρωμα D & C",
+            "title": "⚡ Escalating Urgency on Boat Deck & Final Lifeboats",
+            "desc": "The forward deck is submerged. Collapsible C departs with 71 aboard (including White Star Managing Director Bruce Ismay). On Port, Lightoller brandishes an unloaded revolver to maintain order as crowd surges.",
+            "water_level": "Deck D & C (Water on Boat Deck)",
             "active_decks": "D & C Decks",
-            "urgency": "Απόλυτος Πανικός (Οι λέμβοι τελειώνουν, μένουν πάνω από 1.500 άνθρωποι στο πλοίο)",
+            "urgency": "Extreme Emergency (Remaining lifeboats depleted, ~1,500 people remain aboard)",
             "cabins_flooded": ["Tank Top", "G", "F", "E", "D", "C"]
         },
         {
             "time": "02:05",
-            "title": "🎻 Τελευταία Πτυσσόμενη Λέμβος & 'Nearer, My God, to Thee'",
-            "desc": "Η τελευταία λέμβος (Collapsible D) φεύγει με 44 άτομα. Η ορχήστρα του Wallace Hartley παίζει μουσική μέχρι τέλους στο κατάστρωμα. Ο καπετάνιος Smith ανακοινώνει: 'Every man for himself'.",
-            "water_level": "Boat Deck (Κατάστρωμα Λέμβων)",
+            "title": "🎻 Final Plunge & Breakup (02:20 AM)",
+            "desc": "The last craft (Collapsible D) leaves with 44 people. Wallace Hartley's band plays hymn 'Nearer, My God, to Thee'. Captain Smith steps onto the bridge shouting: 'Every man for himself'.",
+            "water_level": "Boat Deck (Flooding over davits)",
             "active_decks": "A Deck & Boat Deck",
-            "urgency": "Αναπόφευκτο Τέλος",
+            "urgency": "Final Minutes",
             "cabins_flooded": ["Tank Top", "G", "F", "E", "D", "C", "B", "A"]
         },
         {
             "time": "02:20",
-            "title": "💔 Θραύση του Σκάφους & Τελική Βύθιση",
-            "desc": "Η τεράστια τάση σπάει τον Τιτανικό στα δύο μεταξύ 3ου και 4ου καπνοδόχου. Η πλώρη βουλιάζει πρώτη, ακολουθούμενη από την πρύμνη. 1.500 άνθρωποι βρίσκονται στο νερό θερμοκρασίας -2°C. Ο θάνατος από υποθερμία επέρχεται σε 10-15 λεπτά.",
-            "water_level": "Πλήρης Βύθιση στον Ατλαντικό (Βάθος 3.800m)",
-            "active_decks": "Όλα τα καταστρώματα βυθισμένα",
-            "urgency": "Τραγωδία",
+            "title": "💔 Catastrophic Hull Breakup & Final Plunge",
+            "desc": "Immense bending stress breaks Titanic in two between the 3rd and 4th funnels. The bow plunges, followed by the perpendicular stern. ~1,500 people are plunged into -2.8°C seawater, perishing from hypothermia in minutes.",
+            "water_level": "Complete Foundering (Wreck rests at 3,800m / 12,500 ft)",
+            "active_decks": "All Decks Submerged",
+            "urgency": "Catastrophe",
             "cabins_flooded": ["Tank Top", "G", "F", "E", "D", "C", "B", "A", "Boat Deck"]
         }
     ]
 
     # Time slider
     step_time = st.select_slider(
-        "🎛️ Επιλέξτε Χρονική Στιγμή (Time of Disaster):",
+        "🎛️ Select Sinking Timestamp:",
         options=[ev["time"] for ev in timeline_events],
         value="01:15"
     )
@@ -1025,23 +1070,23 @@ elif st.session_state.current_step == 3:
         st.markdown(f"### {current_ev['title']}")
         st.markdown(f"<p style='font-size: 1.05rem; line-height: 1.7; color: #d0dbe8;'>{current_ev['desc']}</p>", unsafe_allow_html=True)
 
-        st.markdown("#### 🌊 Κατάσταση Πλημμύρας & Στάθμη Νερού:")
+        st.markdown("#### 🌊 Flooding Status & Waterline:")
         st.progress(
             (timeline_events.index(current_ev) + 1) / len(timeline_events),
-            text=f"Στάθμη Νερού: {current_ev['water_level']}"
+            text=f"Water Level: {current_ev['water_level']}"
         )
 
         # Status badge for this passenger
         if is_flooded:
-            st.error(f"🚨 **Η ΚΑΜΠΙΝΑ ΣΑΣ ΣΤΟ DECK {passenger_deck} ΕΧΕΙ ΠΛΗΜΜΥΡΙΣΕΙ!** Έπρεπε ήδη να έχετε εγκαταλείψει τον χώρο, διαφορετικά είστε παγιδευμένοι.")
+            st.error(f"🚨 **YOUR CABIN ON DECK {passenger_deck} HAS FLOODED!** Immediate evacuation required — passages below are filling with water!")
         else:
-            st.success(f"🛡️ **Η Καμπίνα σας στο Deck {passenger_deck} είναι ακόμα στεγνή**, αλλά ο χρόνος εξαντλείται γρήγορα.")
+            st.success(f"🛡️ **Your Cabin on Deck {passenger_deck} remains dry**, but remaining time before flooding is rapidly expiring.")
 
         if st.session_state.get("p_boat"):
-            st.info(f"📍 **Ιστορική Κατάσταση Επιβάτη ({st.session_state.p_name})**: Στα αρχεία του Τιτανικού, ο επιβάτης συνδέεται με τη σωσίβια λέμβο **{st.session_state.p_boat}**.")
+            st.info(f"📍 **Historical Passenger Dossier ({st.session_state.p_name})**: In official Titanic manifests, this passenger was recorded aboard craft **{st.session_state.p_boat}**.")
 
     with col_tl2:
-        st.markdown("#### 🚣 Διαθέσιμες Λέμβοι ανά Πλευρά")
+        st.markdown("#### 🚣 Lifeboat Launch Activity by Ship Side")
         
         # Filter boats launched up to this time
         t_minutes = int(current_ev["time"].split(":")[0]) * 60 + int(current_ev["time"].split(":")[1])
@@ -1056,39 +1101,39 @@ elif st.session_state.current_step == 3:
         p_side_boats = [b for b in boats_launched if ("Starboard" in st.session_state.p_side and b["side"] == "Starboard") or ("Port" in st.session_state.p_side and b["side"] == "Port")]
 
         st.metric(
-            label="Συνολικές Λέμβοι που έχουν αναχωρήσει:",
+            label="Total Lifeboats Successfully Lowered:",
             value=f"{len(boats_launched)} / 20",
-            delta=f"{sum(b['loaded'] for b in boats_launched)} επιζώντες"
+            delta=f"{sum(b['loaded'] for b in boats_launched)} survivors"
         )
 
-        st.markdown(f"**Στη δική σας πλευρά ({'Starboard' if 'Starboard' in st.session_state.p_side else 'Port'}):**")
+        st.markdown(f"**On your ship side ({'Starboard' if 'Starboard' in st.session_state.p_side else 'Port'}):**")
         if p_side_boats:
-            boat_list_str = ", ".join([f"No.{b['boat']} ({b['loaded']}/{b['capacity']} επιβάτες)" for b in p_side_boats[-3:]])
-            st.write(f"Τελευταίες λέμβοι: {boat_list_str}")
+            boat_list_str = ", ".join([f"No.{b['boat']} ({b['loaded']}/{b['capacity']} passengers)" for b in p_side_boats[-3:]])
+            st.write(f"Latest craft launched: {boat_list_str}")
         else:
-            st.write("Καμία λέμβος δεν έχει καθελκυστεί ακόμα από την πλευρά σας.")
+            st.write("No lifeboats have lowered yet from your side of the vessel.")
 
         is_woman_or_child = (st.session_state.p_sex == "female") or (st.session_state.p_age < 14)
 
         if "Starboard" in st.session_state.p_side:
             if is_woman_or_child:
-                st.info("💡 **Officer Murdoch (Starboard)**: Έχετε προτεραιότητα επιβίβασης, ενώ επιτρέπεται η συμπλήρωση κενών θέσεων από άνδρες.")
+                st.info("💡 **Officer Murdoch (Starboard)**: Women and children have first priority; men are admitted to fill any remaining seats.")
             else:
-                st.success("💡 **Officer Murdoch (Starboard)**: Επιτρέπει σε άνδρες να επιβιβαστούν αν δεν περιμένουν γυναίκες, δίνοντάς σας ευκαιρία διαφυγής.")
+                st.success("💡 **Officer Murdoch (Starboard)**: Men are allowed to board when no women are in line, offering a vital escape chance.")
         else:
             if is_woman_or_child:
-                st.success("🛡️ **Officer Lightoller (Port)**: Σας δίνει απόλυτη προτεραιότητα ('Women and children ONLY'), αποκλείοντας όλους τους άνδρες.")
+                st.success("🛡️ **Officer Lightoller (Port)**: Absolute priority under strict 'Women and children ONLY' rule.")
             else:
-                st.warning("⚠️ **Officer Lightoller (Port)**: Απαγορεύει αυστηρά την είσοδο σε άνδρες, ακόμα κι αν οι λέμβοι φεύγουν μισοάδειες.")
+                st.warning("⚠️ **Officer Lightoller (Port)**: Strictly prohibits men from boarding, sending boats away partly empty rather than seating men.")
 
     # Navigation buttons
     col_prev, _, col_next = st.columns([1, 3, 1])
     with col_prev:
-        if st.button("⬅️ Πίσω: 3D Θέση", use_container_width=True):
+        if st.button("⬅️ Back: 3D Ship Deck", use_container_width=True):
             st.session_state.current_step = 2
             st.rerun()
     with col_next:
-        if st.button("Επόμενο: Πιθανότητα Επιβίωσης ➡️", type="primary", use_container_width=True):
+        if st.button("Next: Survival Probability & ML ➡️", type="primary", use_container_width=True):
             st.session_state.current_step = 4
             st.rerun()
 
@@ -1096,10 +1141,10 @@ elif st.session_state.current_step == 3:
 # SCREEN 4: SURVIVAL PROBABILITY & MACHINE LEARNING EXPLAINABILITY
 # ─────────────────────────────────────────────────────────────────────────────
 elif st.session_state.current_step == 4:
-    st.markdown("### 🔮 Βήμα 4: Η Μοίρα σας - Πρόβλεψη Επιβίωσης & ML Επεξήγηση")
-    st.markdown("Υπολογισμός πιθανότητας με βάση τα εκπαιδευμένα μοντέλα Μηχανικής Μάθησης και τις ιστορικές συνθήκες της θέσης σας.")
+    st.markdown("### 🔮 Step 4: Your Fate — Machine Learning Prediction & Explainability")
+    st.markdown("Real-time probability inference computed by Scikit-Learn ML models integrated with historical officer protocols.")
 
-    # Εμφάνιση του ενεργού επιβάτη & των ιστορικών insights του dataset
+    # Render active passenger banner & historical dataset insights
     render_passenger_banner(4)
 
     # 1. Prepare feature vector matching training columns
@@ -1191,7 +1236,7 @@ elif st.session_state.current_step == 4:
             mode="gauge+number",
             value=final_prob * 100,
             number={"suffix": "%", "font": {"size": 48, "color": "#ffd166", "family": "Cinzel"}},
-            title={"text": "ΠΙΘΑΝΟΤΗΤΑ ΕΠΙΒΙΩΣΗΣ", "font": {"size": 20, "color": "#ffffff", "family": "Cinzel"}},
+            title={"text": "SURVIVAL PROBABILITY", "font": {"size": 20, "color": "#ffffff", "family": "Cinzel"}},
             gauge={
                 "axis": {"range": [0, 100], "tickwidth": 1, "tickcolor": "#ffffff"},
                 "bar": {"color": gauge_color, "thickness": 0.3},
@@ -1223,71 +1268,71 @@ elif st.session_state.current_step == 4:
         if survived:
             render_html(f"""
             <div style="background: rgba(46, 117, 89, 0.25); border: 2px solid #52b788; border-radius: 12px; padding: 20px; margin-top: 15px;">
-                <h2 style="color: #52b788; margin-top: 0; font-size: 1.5rem;">🎉 ΕΠΙΒΙΩΣΑΤΕ!</h2>
+                <h2 style="color: #52b788; margin-top: 0; font-size: 1.5rem;">🎉 YOU SURVIVED!</h2>
                 <p style="font-size: 1rem; line-height: 1.6; margin-bottom: 0;">
-                    Με πιθανότητα επιβίωσης <b>{final_prob:.1%}</b>, καταφέρατε να επιβιβαστείτε εγκαίρως σε μία από τις σωσίβιες λέμβους.
-                    Περισυλλεγήκατε από το πλοίο <i>R.M.S. Carpathia</i> τα ξημερώματα της 15ης Απριλίου 1912.
+                    With a calculated survival probability of <b>{final_prob:.1%}</b>, you successfully secured a seat in a lifeboat.
+                    You were rescued by the <i>R.M.S. Carpathia</i> at dawn on April 15, 1912.
                 </p>
             </div>
             """)
         else:
             render_html(f"""
             <div style="background: rgba(186, 24, 27, 0.25); border: 2px solid #e63946; border-radius: 12px; padding: 20px; margin-top: 15px;">
-                <h2 style="color: #e63946; margin-top: 0; font-size: 1.5rem;">❄️ ΧΑΘΗΚΑΤΕ ΣΤΟΝ ΑΤΛΑΝΤΙΚΟ</h2>
+                <h2 style="color: #e63946; margin-top: 0; font-size: 1.5rem;">❄️ LOST IN THE NORTH ATLANTIC</h2>
                 <p style="font-size: 1rem; line-height: 1.6; margin-bottom: 0;">
-                    Με πιθανότητα επιβίωσης μόλις <b>{final_prob:.1%}</b>, οι συνθήκες ήταν συντριπτικά εναντίον σας.
-                    Το όνομά σας καταγράφηκε ανάμεσα στις 1.500 τραγικές απώλειες του ναυαγίου.
+                    With a calculated survival probability of only <b>{final_prob:.1%}</b>, the odds were overwhelmingly stacked against you.
+                    Your name was recorded among the 1,500 tragic casualties of the foundering.
                 </p>
             </div>
             """)
 
-        factor_gender = 'Ευνοϊκό (Γυναίκα / Παιδί)' if not is_male or not is_adult else 'Δυσμενές (Ενήλικος άνδρας)'
-        factor_class = 'Υψηλή προτεραιότητα' if st.session_state.p_pclass==1 else ('Μέτρια' if st.session_state.p_pclass==2 else 'Χαμηλή / Αποκλεισμός')
-        factor_side = '+12% (Murdoch)' if is_starboard and is_male else ('-14% αποκλεισμός (Lightoller)' if not is_starboard and is_male else 'Ουδέτερο')
+        factor_gender = 'Favorable (Woman / Child)' if not is_male or not is_adult else 'Unfavorable (Adult Male)'
+        factor_class = 'High Priority (1st Class)' if st.session_state.p_pclass==1 else ('Moderate (2nd Class)' if st.session_state.p_pclass==2 else 'Low / Steerage Bottlenecks')
+        factor_side = '+12% (Murdoch Male Admission)' if is_starboard and is_male else ('-14% (Lightoller Bar)' if not is_starboard and is_male else 'Neutral (Woman/Child)')
 
         render_html(f"""
         <div class="info-card" style="margin-top: 15px;">
-            <b>🔑 Κύριοι Παράγοντες Επιρροής:</b><br>
-            • <b>Φύλο & Ηλικία:</b> {factor_gender}<br>
-            • <b>Θέση:</b> {st.session_state.p_pclass}η Θέση ({factor_class})<br>
-            • <b>Πλευρά & Αξιωματικός:</b> {st.session_state.p_side} ({factor_side})
+            <b>🔑 Key Governing Survival Factors:</b><br>
+            • <b>Demographic Profile:</b> {factor_gender}<br>
+            • <b>Socioeconomic Class:</b> Class {st.session_state.p_pclass} ({factor_class})<br>
+            • <b>Deck Officer Protocol:</b> {st.session_state.p_side} ({factor_side})
         </div>
         """)
 
-        # Historical Dataset Comparison (αν πρόκειται για υπαρκτό επιβάτη του Kaggle dataset)
+        # Historical Dataset Comparison (for real Kaggle dataset persona)
         if st.session_state.get("p_dataset_id") is not None:
             actual_surv = st.session_state.p_actual_survived
             match_model = (survived and actual_surv == 1) or (not survived and actual_surv == 0)
             status_color = "#52b788" if match_model else "#ffd166"
-            verdict_text = "ΣΥΜΦΩΝΙΑ ΜΟΝΤΕΛΟΥ & ΙΣΤΟΡΙΑΣ" if match_model else "ΙΣΤΟΡΙΚΗ ΑΠΟΚΛΙΣΗ / ΕΞΑΙΡΕΣΗ"
-            actual_str = f"ΕΠΕΖΗΣΕ ({st.session_state.p_boat})" if actual_surv == 1 else "ΧΑΘΗΚΕ ΣΤΟ ΝΑΥΑΓΙΟ"
+            verdict_text = "MODEL PREDICTION AGREES WITH HISTORY" if match_model else "HISTORICAL ANOMALY / STATISTICAL EXCEPTION"
+            actual_str = f"SURVIVED ({st.session_state.p_boat})" if actual_surv == 1 else "PERISHED IN SINKING"
             
             render_html(f"""
             <div style="background: rgba(18, 30, 49, 0.85); border: 1px solid {status_color}; border-radius: 10px; padding: 14px 16px; margin-top: 15px;">
                 <div style="font-size: 0.82rem; color: {status_color}; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">
-                    🏛️ Σύγκριση με το Kaggle Dataset (#{st.session_state.p_dataset_id}) • {verdict_text}
+                    🏛️ Kaggle Dataset Verification (#{st.session_state.p_dataset_id}) • {verdict_text}
                 </div>
                 <div style="font-size: 0.92rem; color: #ffffff; line-height: 1.5;">
-                    • <b>Πρόβλεψη Αλγορίθμου:</b> {final_prob:.1%} πιθανότητα ({'Επιβίωση' if survived else 'Απώλεια'})<br>
-                    • <b>Πραγματική Έκβαση (1912):</b> <b style="color: {'#52b788' if actual_surv == 1 else '#e63946'};">{actual_str}</b>
+                    • <b>Model Prediction:</b> {final_prob:.1%} probability ({'Survived' if survived else 'Lost'})<br>
+                    • <b>Historical Record (1912):</b> <b style="color: {'#52b788' if actual_surv == 1 else '#e63946'};">{actual_str}</b>
                 </div>
             </div>
             """)
 
     # Explainability Waterfall / Feature Impact Chart
-    st.markdown("#### 🔬 Επεξήγηση Μοντέλου Μηχανικής Μάθησης (Feature Importance Breakdown)")
-    st.caption("Πόσο συνέβαλε το κάθε σας χαρακτηριστικό στην τελική πιθανότητα επιβίωσης (βάσει συντελεστών Logistic Regression).")
+    st.markdown("#### 🔬 Explainable AI: Feature Importance Breakdown (Log-Odds Contribution)")
+    st.caption("Quantified contribution of each demographic and spatial feature to your survival odds (Logistic Regression weights).")
 
     impacts = []
     for col, val in input_dict.items():
         if val != 0 and col in coefficients:
             weight = coefficients[col] * val
-            readable_col = col.replace("Sex_male", "Φύλο (Άνδρας)").replace("Pclass_2", "2η Θέση").replace("Pclass_3", "3η Θέση").replace("IsAlone", "Μόνος/η χωρίς οικογένεια").replace("TicketGroup_Pair (2)", "Ζευγάρι (Pair)").replace("TicketGroup_Large Group (5+)", "Μεγάλη Ομάδα (5+)").replace("Embarked_S", "Southampton").replace("Embarked_Q", "Queenstown")
+            readable_col = col.replace("Sex_male", "Sex (Male)").replace("Pclass_2", "2nd Class").replace("Pclass_3", "3rd Class (Steerage)").replace("IsAlone", "Solo Traveler").replace("TicketGroup_Pair (2)", "Pair (Ticket for 2)").replace("TicketGroup_Large Group (5+)", "Large Group (5+)").replace("Embarked_S", "Port (Southampton)").replace("Embarked_Q", "Port (Queenstown)")
             impacts.append({"Feature": readable_col, "Impact": weight})
 
     if officer_modifier != 0.0:
         impacts.append({
-            "Feature": f"Πλευρά Πλοίου ({'Starboard / Murdoch' if is_starboard else 'Port / Lightoller'})",
+            "Feature": f"Ship Side ({'Starboard / Murdoch' if is_starboard else 'Port / Lightoller'})",
             "Impact": officer_modifier * 4.0
         })
 
@@ -1301,7 +1346,7 @@ elif st.session_state.current_step == 4:
         orientation="h",
         color="Impact",
         color_continuous_scale=[[0, "#e63946"], [0.5, "#445566"], [1, "#52b788"]],
-        title="Συνεισφορά Χαρακτηριστικών στην Πιθανότητα Επιβίωσης (Log-Odds Impact)"
+        title="Feature Contribution to Survival Probability (Log-Odds Impact)"
     )
     fig_imp.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
@@ -1316,11 +1361,11 @@ elif st.session_state.current_step == 4:
     # Navigation buttons
     col_prev, _, col_next = st.columns([1, 3, 1])
     with col_prev:
-        if st.button("⬅️ Πίσω: Προσομοίωση", use_container_width=True):
+        if st.button("⬅️ Back: Timeline Simulation", use_container_width=True):
             st.session_state.current_step = 3
             st.rerun()
     with col_next:
-        if st.button("Επόμενο: Key Notes & Στατιστικά ➡️", type="primary", use_container_width=True):
+        if st.button("Next: Key Notes & Citations ➡️", type="primary", use_container_width=True):
             st.session_state.current_step = 5
             st.rerun()
 
@@ -1328,38 +1373,38 @@ elif st.session_state.current_step == 4:
 # SCREEN 5: HISTORICAL KEY NOTES & RESEARCH DOSSIER
 # ─────────────────────────────────────────────────────────────────────────────
 elif st.session_state.current_step == 5:
-    st.markdown("### 📊 Βήμα 5: Key Notes & Ερευνητικά Στατιστικά Ευρήματα")
+    st.markdown("### 📊 Step 5: Research Findings, Naval Forensics & Academic Citations")
     st.markdown("""
-    Ανακαλύψτε τα βαθύτερα στατιστικά μοτίβα από την ανάλυση των πραγματικών δεδομένων του Τιτανικού.
-    Αυτά τα ευρήματα φωτίζουν άγνωστες πτυχές της τραγωδίας.
+    Explore the statistical patterns derived from the historical passenger manifest and naval forensic research.
+    These key findings illuminate the social and mechanical factors governing the tragedy.
     """)
 
-    # Εμφάνιση του ενεργού επιβάτη & των ιστορικών insights του dataset
+    # Render active passenger banner & historical dataset insights
     render_passenger_banner(5)
 
-    p_display = st.session_state.p_name.strip() if st.session_state.p_name.strip() else "Επιβάτης Τιτανικού"
-    st.info(f"💡 **Εστίαση στον Επιβάτη:** Ο/Η **{p_display}** ταξίδευε στην **{st.session_state.p_pclass}η Θέση** ({st.session_state.p_sex}, {st.session_state.p_age} ετών). Δείτε στις παρακάτω καρτέλες πώς η ταξική του θέση και το δημογραφικό του προφίλ επηρέασαν στατιστικά τη μοίρα του.")
+    p_display = st.session_state.p_name.strip() if st.session_state.p_name.strip() else "Titanic Passenger"
+    st.info(f"💡 **Passenger Focus:** **{p_display}** traveled in **Class {st.session_state.p_pclass}** ({st.session_state.p_sex}, age {st.session_state.p_age}). Explore below how socioeconomic standing and family dynamics dictated survival rates.")
 
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "🛶 Το Παράδοξο των Λέμβων (472 Κενές Θέσεις)",
-        "🎟️ Η Δυναμική των Εισιτηρίων (Ticket Groups)",
-        "⚖️ Το Ταξικό Χάσμα (Class Disparity)",
-        "👶 Γυναίκες & Παιδιά Πρώτα",
-        "🔬 Η Επιστήμη του Ναυαγίου (Bulkheads, Rivets & Ασύρματος)",
-        "📚 Βιβλιογραφία & Citations (Αναφορές)"
+        "🛶 Lifeboat Paradox (472 Empty Seats)",
+        "🎟️ Ticket Group Dynamics",
+        "⚖️ Socioeconomic Class Gap",
+        "👶 Women & Children First",
+        "🔬 The Science of the Sinking",
+        "📚 Academic & Historical Citations"
     ])
 
     with tab1:
-        st.markdown("#### 🛶 Η Ανωμαλία των Σωσιβίων Λέμβων: 472 Κενές Θέσεις")
+        st.markdown("#### 🛶 The Lifeboat Paradox: 472 Empty Seats Lost in the Atlantic")
         st.markdown("""
-        Ενώ ο Τιτανικός διέθετε λέμβους για **1.178 άτομα**, διασώθηκαν μόλις **706 επιβάτες**. 
-        Αυτό σημαίνει ότι **472 θέσεις στις λέμβους έμειναν άδειες** και χάθηκαν στον ωκεανό!
+        While the Titanic carried sufficient lifeboats for **1,178 individuals**, only **706 survivors** were rescued. 
+        This demonstrates that **472 lifeboat seats departed completely empty**!
         """)
 
         col_b1, col_b2, col_b3 = st.columns(3)
-        col_b1.metric("Συνολική Χωρητικότητα", "1,178 θέσεις")
-        col_b2.metric("Πραγματικοί Επιβάτες", "706 άτομα", delta="-472 κενές θέσεις", delta_color="inverse")
-        col_b3.metric("Μέση Πληρότητα Λέμβων", "60.4%")
+        col_b1.metric("Total Lifeboat Capacity", "1,178 seats")
+        col_b2.metric("Actual Rescued", "706 passengers", delta="-472 empty seats", delta_color="inverse")
+        col_b3.metric("Average Lifeboat Fill Rate", "60.4%")
 
         # Lifeboats bar chart
         df_boats_plot = df_boats.copy()
@@ -1371,10 +1416,10 @@ elif st.session_state.current_step == 5:
             y="Fill_Rate",
             color="side",
             color_discrete_map={"Port": "#48cae4", "Starboard": "#52b788"},
-            labels={"boat": "Αριθμός Λέμβου", "Fill_Rate": "Ποσοστό Πληρότητας (%)", "side": "Πλευρά Πλοίου"},
-            title="Πληρότητα ανά Σωσίβια Λέμβο (Port vs Starboard)"
+            labels={"boat": "Lifeboat No", "Fill_Rate": "Fill Rate (%)", "side": "Ship Side"},
+            title="Capacity Utilization per Lifeboat (Port vs Starboard)"
         )
-        fig_lb.add_hline(y=100, line_dash="dash", line_color="#ffd166", annotation_text="Μέγιστη Χωρητικότητα (100%)")
+        fig_lb.add_hline(y=100, line_dash="dash", line_color="#ffd166", annotation_text="Rated Maximum Capacity (100%)")
         fig_lb.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(18, 30, 49, 0.4)",
@@ -1383,30 +1428,30 @@ elif st.session_state.current_step == 5:
         )
         st.plotly_chart(fig_lb, use_container_width=True)
 
-        st.caption("📌 **Γιατί έμειναν άδειες;** 1) Οι πρώτοι αξιωματικοί φοβούνταν ότι οι λέμβοι θα έσπαγαν αν γέμιζαν πλήρως πριν κατέβουν στο νερό. 2) Δεν είχαν γίνει ποτέ ασκήσεις εκκένωσης για το πλήρωμα. 3) Πολλοί επιβάτες 1ης θέσης αρνούνταν να μοιραστούν τις λέμβους με επιβάτες άλλων τάξεων.")
+        st.caption("📌 **Why did 472 seats go empty?** 1) Early officers feared davits would buckle if craft were filled to capacity before lowering. 2) Crew lifeboat drills had never been conducted. 3) Passenger reluctance to abandon a seemingly safe vessel early on.")
 
     with tab2:
-        st.markdown("#### 🎟️ Ticket Groups: Πώς το Μέγεθος της Παρέας Καθόρισε τη Ζωή")
+        st.markdown("#### 🎟️ Ticket Groups: How Traveling Companions Dictated Survival")
         st.markdown("""
-        Από την πρωτογενή ανάλυση των κοινών εισιτηρίων (Duplicate Tickets), προκύπτει ένα εντυπωσιακό μοτίβο: 
-        **Τα ζευγάρια είχαν το υψηλότερο ποσοστό επιβίωσης (52%+)**, ενώ οι **μεγάλες ομάδες (5+ άτομα) κατέρρευσαν σε ποσοστά κάτω από 16%**!
+        Analyzing shared passenger tickets (Duplicate Ticket Groups) reveals a striking demographic pattern: 
+        **Traveling couples had the highest survival rate (53.2%)**, while **large family groups (5+) collapsed below 15.6%**!
         """)
 
         # Ticket Group Data from Notebook
         ticket_stats = pd.DataFrame({
-            "Μέγεθος Ομάδας": ["Solo (Μόνος/η - 1)", "Pair (Ζευγάρι - 2)", "Small Group (3-4 άτομα)", "Large Group (5+ άτομα)"],
-            "Ποσοστό Επιβίωσης (%)": [30.0, 53.2, 43.8, 15.6],
-            "Πλήθος Επιβατών": [545, 188, 89, 69]
+            "Group Size": ["Solo Traveler (1)", "Pair / Couple (2)", "Small Group (3-4)", "Large Family Group (5+)"],
+            "Survival Rate (%)": [30.0, 53.2, 43.8, 15.6],
+            "Passenger Count": [545, 188, 89, 69]
         })
 
         fig_tg = px.bar(
             ticket_stats,
-            x="Μέγεθος Ομάδας",
-            y="Ποσοστό Επιβίωσης (%)",
-            color="Ποσοστό Επιβίωσης (%)",
+            x="Group Size",
+            y="Survival Rate (%)",
+            color="Survival Rate (%)",
             color_continuous_scale="Viridis",
-            text="Ποσοστό Επιβίωσης (%)",
-            title="Ποσοστό Επιβίωσης ανά Μέγεθος Ομάδας Εισιτηρίου"
+            text="Survival Rate (%)",
+            title="Survival Rate by Ticket Group Size"
         )
         fig_tg.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
         fig_tg.update_layout(
@@ -1418,29 +1463,29 @@ elif st.session_state.current_step == 5:
         )
         st.plotly_chart(fig_tg, use_container_width=True)
 
-        st.caption("💡 **Κοινωνική Ερμηνεία**: Στα ζευγάρια, ο άνδρας συνήθως εξασφάλιζε θέση για τη σύζυγό του στη λέμβο. Αντίθετα, στις πολύτεκνες οικογένειες (κυρίως 3ης θέσης), οι γονείς αρνήθηκαν να χωριστούν από τα παιδιά τους, με αποτέλεσμα να χαθούν ολόκληρες οικογένειες μαζί (όπως η οικογένεια Goodwin με 8 μέλη και η οικογένεια Sage με 11 μέλη).")
+        st.caption("💡 **Sociological Context**: In couples, men escorted wives to lifeboats. In contrast, large immigrant families in steerage refused to separate, leading to entire households perishing together (e.g., the Goodwin family of 8 and the Sage family of 11).")
 
     with tab3:
-        st.markdown("#### ⚖️ Το Κοινωνικό και Ταξικό Χάσμα (1η vs 2η vs 3η Θέση)")
+        st.markdown("#### ⚖️ The Socioeconomic Class Gap (1st vs 2nd vs 3rd Class)")
         st.markdown("""
-        Η ταξική ανισότητα στον Τιτανικό ήταν καταλυτική. Οι επιβάτες 1ης θέσης είχαν **υπερδιπλάσιες πιθανότητες επιβίωσης** σε σύγκριση με την 3η θέση.
+        Socioeconomic status exerted an enormous influence on survival. 1st-class passengers were **more than twice as likely to survive** compared to 3rd-class steerage travelers.
         """)
 
         class_summary = pd.DataFrame({
-            "Θέση (Class)": ["1η Θέση (First)", "2η Θέση (Second)", "3η Θέση (Third)"],
-            "Επιβίωση (%)": [62.9, 47.3, 24.2],
-            "Επιβίωση Γυναικών (%)": [96.8, 92.1, 50.0],
-            "Επιβίωση Ανδρών (%)": [36.9, 15.7, 13.5]
+            "Class": ["1st Class", "2nd Class", "3rd Class (Steerage)"],
+            "Overall Survival (%)": [62.9, 47.3, 24.2],
+            "Female Survival (%)": [96.8, 92.1, 50.0],
+            "Male Survival (%)": [36.9, 15.7, 13.5]
         })
 
         st.dataframe(class_summary, use_container_width=True, hide_index=True)
 
         fig_cls = px.bar(
             class_summary,
-            x="Θέση (Class)",
-            y=["Επιβίωση Γυναικών (%)", "Επιβίωση Ανδρών (%)"],
+            x="Class",
+            y=["Female Survival (%)", "Male Survival (%)"],
             barmode="group",
-            title="Ποσοστά Επιβίωσης ανά Φύλο και Κοινωνική Θέση",
+            title="Survival Rates by Sex and Passenger Class",
             color_discrete_sequence=["#ffd166", "#48cae4"]
         )
         fig_cls.update_layout(
@@ -1452,53 +1497,53 @@ elif st.session_state.current_step == 5:
         st.plotly_chart(fig_cls, use_container_width=True)
 
     with tab4:
-        st.markdown("#### 👶 Το Πρωτόκολλο 'Γυναίκες και Παιδιά Πρώτα' & Η Τραγωδία των Τάξεων")
+        st.markdown("#### 👶 The 'Women and Children First' Protocol & Demographic Reality")
         st.markdown("""
-        Το ιστορικό ναυτικό πρωτόκολλο τηρήθηκε πιστά, αλλά η πιθανότητα σωτηρίας ενός παιδιού κρίθηκε συντριπτικά από το εισιτήριό του:
-        - **2η Θέση**: **100% επιβίωση των παιδιών** (18 στα 18 παιδιά στο Kaggle dataset, 24 στα 24 ιστορικά).
-        - **1η Θέση**: **3 στα 4 παιδιά επιβίωσαν** (75% στο dataset, 5 στα 6 ιστορικά). Το μοναδικό παιδί 1ης/2ης θέσης που χάθηκε ήταν η 2χρονη **Helen Lorraine Allison**, καθώς οι γονείς της αρνήθηκαν να επιβιβαστούν σε λέμβο ψάχνοντας απεγνωσμένα το βρέφος τους (το οποίο είχε ήδη διασωθεί από τη νταντά του).
-        - **3η Θέση**: **Μόλις το 42.9% των παιδιών επιβίωσε** (21 στα 49 στο dataset), καθώς πάνω από 50 παιδιά 3ης θέσης παγιδεύτηκαν στα κατώτερα καταστρώματα.
+        The age-old maritime protocol was enforced, but a child's survival odds were determined almost entirely by passenger class:
+        - **2nd Class**: **100% child survival rate** (18 of 18 children in Kaggle dataset; 24 of 24 historically).
+        - **1st Class**: **75% child survival rate** (3 of 4 in dataset; 5 of 6 historically). The sole 1st/2nd-class child casualty was 2-year-old **Helen Lorraine Allison**, whose parents refused lifeboats searching for their infant brother.
+        - **3rd Class (Steerage)**: **Only 42.9% of children survived** (21 of 49 in dataset; over 50 steerage children drowned due to trapped lower-deck quarters).
         """)
 
         child_stats = pd.DataFrame({
-            "Κατηγορία Παιδιών (< 14 ετών στο Dataset)": ["Παιδιά 1ης Θέσης", "Παιδιά 2ης Θέσης", "Παιδιά 3ης Θέσης"],
-            "Ποσοστό Επιβίωσης (%)": [75.0, 100.0, 42.9],
-            "Επέζησαν": [3, 18, 21],
-            "Χάθηκαν": [1, 0, 28]
+            "Child Cohort (< 14 yrs in Dataset)": ["1st Class Children", "2nd Class Children", "3rd Class Children"],
+            "Survival Rate (%)": [75.0, 100.0, 42.9],
+            "Survived": [3, 18, 21],
+            "Lost": [1, 0, 28]
         })
         st.dataframe(child_stats, use_container_width=True, hide_index=True)
 
-        st.caption("📌 **Πηγή Δεδομένων**: Kaggle Titanic Dataset (`yasserh/titanic-dataset` / Kaggle Titanic ML).")
+        st.caption("📌 **Data Source**: Kaggle Titanic Dataset (`yasserh/titanic-dataset` / Kaggle Titanic ML).")
 
     with tab5:
-        st.markdown("#### 🔬 Η Επιστήμη του Ναυαγίου: Γιατί Βυθίστηκε το 'Αβύθιστο' Πλοίο;")
+        st.markdown("#### 🔬 Forensic Naval Science: Why Did the 'Unsinkable' Ship Founder?")
         st.markdown("""
-        Με βάση τις επιστημονικές και ναυπηγικές αναλύσεις (αρχείο *Titanic Science*):
+        Forensic, metallurgical, and hydrodynamic analysis of the disaster:
         """)
 
         col_s1, col_s2 = st.columns(2)
         with col_s1:
             st.markdown("""
             <div class="info-card">
-                <h4 style="color: #ffd166; margin-top:0;">1. Το Φαινόμενο της Παγοθήκης (Bulkheads)</h4>
+                <h4 style="color: #ffd166; margin-top:0;">1. The Ice Cube Tray Effect (Bulkhead Overflow)</h4>
                 <p style="font-size: 0.92rem; line-height: 1.6;">
-                    Ο Τιτανικός διέθετε <b>16 στεγανά διαμερίσματα</b> και είχε σχεδιαστεί να παραμένει στην επιφάνεια ακόμα και με <b>4 διαμερίσματα πλημμυρισμένα</b>. 
-                    Το παγόβουνο έπληξε <b>6 διαμερίσματα</b> στην πλώρη.<br><br>
-                    <b>Το μοιραίο σχεδιαστικό λάθος:</b> Τα διαφράγματα δεν ήταν σφραγισμένα στην οροφή, αλλά έφταναν μόνο μέχρι το Κατάστρωμα E (ή D στην πλώρη). 
-                    Καθώς το βάρος του νερού έγειρε την πλώρη προς τα κάτω, το νερό υπερχείλισε πάνω από το πρώτο διάφραγμα στο επόμενο, 
-                    <b>ακριβώς όπως γεμίζει μια παγοθήκη κάτω από τη βρύση</b>!
+                    Titanic was designed with <b>16 watertight compartments</b> and could stay afloat with any <b>4 compartments flooded</b>. 
+                    The iceberg opened seams across <b>6 forward compartments</b>.<br><br>
+                    <b>The fatal design flaw:</b> Bulkheads were not capped at ceiling level; they reached only up to Deck E (or Deck D forward). 
+                    As the incoming weight pulled the bow down, seawater spilled over the top of one bulkhead into the next, 
+                    <b>precisely like filling an ice cube tray under a running tap</b>!
                 </p>
             </div>
             """, unsafe_allow_html=True)
 
             st.markdown("""
             <div class="info-card">
-                <h4 style="color: #ffd166; margin-top:0;">2. Η Αστοχία των Ήλων (Rivet Failure)</h4>
+                <h4 style="color: #ffd166; margin-top:0;">2. Rivet Metallurgy & Slag Embrittlement</h4>
                 <p style="font-size: 0.92rem; line-height: 1.6;">
-                    Το κύτος συγκρατούνταν από <b>3.000.000 πριτσίνια (ήλους)</b>, συνολικού βάρους 1.200 τόνων. 
-                    Μεταλλουργικές εξετάσεις στα συντρίμμια απέδειξαν ότι τα πριτσίνια της πλώρης περιείχαν υψηλή συγκέντρωση σκωρίας (slag). 
-                    Στη θερμοκρασία του παγωμένου νερού (-2.8°C / 27°F), το μέταλλο έγινε <b>ψαθυρό (brittle)</b> και τα κεφάλια των πριτσινιών αποκόπηκαν 
-                    υπό την πίεση του παγόβουνου, ανοίγοντας τις ραφές των χαλύβδινων πλακών.
+                    The hull was joined by <b>3,000,000 wrought iron and steel rivets</b> weighing 1,200 tons. 
+                    Metallurgical testing on recovered rivets revealed high concentrations of silicate slag. 
+                    At sub-zero water temperatures (-2.8°C / 27°F), iron underwent a <b>ductile-to-brittle transition</b>; rivet heads sheared off, 
+                    unzipping the hull plating seams along the starboard side.
                 </p>
             </div>
             """, unsafe_allow_html=True)
@@ -1506,39 +1551,39 @@ elif st.session_state.current_step == 5:
         with col_s2:
             st.markdown("""
             <div class="info-card">
-                <h4 style="color: #ffd166; margin-top:0;">3. Η Τραγωδία των Ασυρμάτων & Το 'SS Californian'</h4>
+                <h4 style="color: #ffd166; margin-top:0;">3. Wireless Communications & The 'SS Californian'</h4>
                 <p style="font-size: 0.92rem; line-height: 1.6;">
-                    Το πλησιέστερο πλοίο στον Τιτανικό τη νύχτα του ναυαγίου ήταν το <b>SS Californian</b>, σε απόσταση μόλις <b>10 έως 19 ναυτικών μιλίων</b> 
-                    (οι επιβάτες του Τιτανικού έβλεπαν τα φώτα του στον ορίζοντα!).<br><br>
-                    <b>Γιατί δεν βοήθησε;</b> Ο μοναδικός ασυρματιστής του Californian, Cyril Evans, έκλεισε τον ασύρματο και πήγε για ύπνο στις 23:30 
-                    (μόλις 10 λεπτά πριν τη σύγκρουση). Οι ναύτες είδαν τις λευκές φωτοβολίδες του Τιτανικού αλλά δεν κατάλαβαν ότι ήταν σήματα κινδύνου.<br><br>
-                    Αντίθετα, το <b>RMS Carpathia</b> βρισκόταν 58 μίλια μακριά, έπλευσε με τη μέγιστη ταχύτητα των 17.5 κόμβων μέσα στα παγόβουνα 
-                    και έφτασε στις 04:00 για να περισυλλέξει τους 705 επιζώντες.
+                    The nearest vessel that night was the <b>SS Californian</b>, idling just <b>10 to 19 nautical miles away</b> 
+                    (its masthead lights were clearly visible from Titanic's boat deck).<br><br>
+                    <b>Why did it not respond?</b> Californian's sole wireless operator, Cyril Evans, powered down his set and retired at 23:30, 
+                    10 minutes before impact. The watch officers saw the white distress rockets but failed to realize they signaled a catastrophe.<br><br>
+                    By contrast, <b>RMS Carpathia</b> was 58 miles away; Captain Rostron navigated full ahead at 17.5 knots through icefields, 
+                    and arrived at 04:00 AM to rescue all 705 survivors from the lifeboats.
                 </p>
             </div>
             """, unsafe_allow_html=True)
 
             st.markdown("""
             <div class="info-card">
-                <h4 style="color: #ffd166; margin-top:0;">4. Υποθερμία σε Παγωμένα Νερά (-2.8°C)</h4>
+                <h4 style="color: #ffd166; margin-top:0;">4. Lethal Hypothermia in Freezing Waters (-2.8°C / 27°F)</h4>
                 <p style="font-size: 0.92rem; line-height: 1.6;">
-                    Η θερμοκρασία του νερού ήταν <b>-2.8°C (27°F)</b>. 
-                    Σε τέτοιες συνθήκες, η θερμοκρασία του σώματος πέφτει ραγδαία κάτω από τους 35°C (υποθερμία). 
-                    Ο θάνατος επερχόταν μέσα σε <b>10 έως 15 λεπτά</b>, καθιστώντας την επιβίωση στο νερό χωρίς λέμβο αδύνατη. 
-                    Από τους εκατοντάδες που έπεσαν στη θάλασσα, λιγότεροι από 6 διασώθηκαν ζωντανοί.
+                    The sea temperature was <b>-2.8°C (27°F)</b> — below the freezing point of fresh water. 
+                    In sub-zero salt water, core body temperature drops below 35°C within minutes, inducing cold incapacitation. 
+                    Cold shock and cardiac arrest ensued within <b>10 to 15 minutes</b>, making survival in the water without a lifeboat virtually impossible. 
+                    Of the hundreds plunged into the sea, fewer than 6 were pulled out alive.
                 </p>
             </div>
             """, unsafe_allow_html=True)
 
     with tab6:
-        st.markdown("#### 📚 Επιστημονική & Ιστορική Βιβλιογραφία (References & Citations)")
+        st.markdown("#### 📚 Academic & Historical References (APA Citations)")
         st.markdown("""
-        Όλα τα δεδομένα, οι μαθηματικές συναρτήσεις, οι ιστορικές αναπαραστάσεις των λέμβων και τα φυσικά χαρακτηριστικά του πλοίου 
-        βασίζονται σε διεθνώς αναγνωρισμένες επιστημονικές πηγές, κρατικές ανακρίσεις και ακαδημαϊκή βιβλιογραφία (μορφότυπο APA):
+        All statistical parameters, machine learning weights, lifeboat records, and naval architecture metrics 
+        are derived from peer-reviewed scientific literature, official government inquiry reports, and verified archives (APA format):
         """)
 
         st.markdown("""
-        ##### 📊 1. Σύνολα Δεδομένων & Πηγές Μηχανικής Μάθησης (Datasets)
+        ##### 📊 1. Datasets & Machine Learning Repositories
         - **Kaggle Titanic Dataset**: Yasser, H. (2021). *Titanic Dataset*. Kaggle.  
           URL: [https://www.kaggle.com/datasets/yasserh/titanic-dataset](https://www.kaggle.com/datasets/yasserh/titanic-dataset)
         - **Kaggle Competition Data**: Kaggle Inc. (2012). *Titanic: Machine Learning from Disaster*.  
@@ -1546,72 +1591,72 @@ elif st.session_state.current_step == 5:
         - **Encyclopedia Titanica Manifest & Archives**: Hind, P. et al. (1996–2026). *Encyclopedia Titanica: Titanic Passenger Manifests, Deck Plans & Lifeboat Allocations*.  
           URL: [https://www.encyclopedia-titanica.org](https://www.encyclopedia-titanica.org)
 
-        ##### 🏛️ 2. Επίσημες Κρατικές Ανακρίσεις (Official Governmental Inquiries, 1912)
-        - **Βρετανική Ανάκριση (British Mersey Inquiry)**:  
+        ##### 🏛️ 2. Official Governmental Inquiries (1912)
+        - **British Mersey Inquiry (Parliamentary Papers)**:  
           Mersey, J. C. B., Baron. (1912). *Report on the Loss of the "Titanic" (S.S.): Formal Investigation into the Loss of the British S.S. Titanic*. Parliamentary Papers, Cd. 6352. London: His Majesty's Stationery Office.
-        - **Αμερικανική Ανάκριση (United States Senate Inquiry)**:  
+        - **United States Senate Inquiry (Senate Document 726)**:  
           Smith, W. A. et al. (1912). *"Titanic" Disaster: Hearings before a Subcommittee of the Committee on Commerce, United States Senate, Sixty-Second Congress, Second Session* (Senate Document No. 726 / Report 806). Washington: Government Printing Office.
 
-        ##### 📖 3. Αυτόπτες Μάρτυρες & Απομνημονεύματα Επιζώντων (Survivor Eyewitness Accounts)
-        - **Lawrence Beesley (Επιβάτης 2ης Θέσης)**:  
+        ##### 📖 3. Survivor Eyewitness Accounts & Memoirs
+        - **Lawrence Beesley (2nd Class Passenger)**:  
           Beesley, L. (1912). *The Loss of the SS Titanic: Its Story and Its Lessons*. Boston & New York: Houghton Mifflin Company.
-        - **John Borland "Jack" Thayer Jr. (Επιβάτης 1ης Θέσης)**:  
+        - **John Borland "Jack" Thayer Jr. (1st Class Passenger)**:  
           Thayer, J. B., Jr. (1940). *The Sinking of the S.S. Titanic: An Event That Shook the World*. Philadelphia: The Academy of Natural Sciences.
-        - **Charles Herbert Lightoller (2ος Αξιωματικός)**:  
+        - **Charles Herbert Lightoller (Second Officer)**:  
           Lightoller, C. H. (1935). *Titanic and Other Ships*. London: Ivor Nicholson and Watson.
 
-        ##### 🔬 4. Μεταλλουργική & Ναυπηγική Εγκληματολογία (Forensic & Metallurgical Research)
-        - **Αστοχία Ήλων & Σκωρία (Rivet Metallurgy)**:  
+        ##### 🔬 4. Forensic & Naval Engineering Research
+        - **Rivet Slag Metallurgy & Cold Embrittlement**:  
           Foecke, T., & McCarty, J. (2008). *What Really Sank the Titanic: New Forensic Discoveries*. New York: Citadel Press.
-        - **Δομική Κατάρρευση & Υδροδυναμική Βύθισης**:  
+        - **Hull Structural Failure & Hydrodynamics**:  
           Garzke, W. H., Brown, D. K., & Woodward, J. B. (1997). *The Structural Failure of the Titanic: Investigation and Analysis*. SNAME Transactions (Society of Naval Architects and Marine Engineers), 105, 237–264.
 
-        ##### 💻 5. Εργαλεία Λογισμικού & Αλγόριθμοι Μηχανικής Μάθησης (Software Libraries)
+        ##### 💻 5. Scientific Software & Machine Learning Libraries
         - **Scikit-learn**: Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., Blondel, M., Prettenhofer, P., Weiss, R., Dubourg, V., Vanderplas, J., Passos, A., Cournapeau, D., Brucher, M., Perrot, M., & Duchesnay, É. (2011). *Scikit-learn: Machine Learning in Python*. Journal of Machine Learning Research, 12, 2825–2830.
         - **Streamlit**: Snowflake Inc. (2026). *Streamlit: A faster way to build and share data apps*. Open source framework. URL: [https://streamlit.io](https://streamlit.io)
         - **Plotly**: Plotly Technologies Inc. (2026). *Collaborative Data Science and 3D Visualizations*. URL: [https://plotly.com](https://plotly.com)
         """)
 
     # Completion banner & Navigation buttons
-    st.info("🏁 **Ολοκληρώσατε όλη τη διαδρομή (Βήμα 5 από 5)!** Μπορείτε να ανατρέξετε στα προηγούμενα βήματα ή να πατήσετε **'Συνέχεια: Νέος Επιβάτης'** για να δοκιμάσετε ένα νέο σενάριο.")
+    st.info("🏁 **Journey Complete (Step 5 of 5)!** You can review earlier steps or click **'Start Over: New Passenger'** to test another persona or custom profile.")
 
     col_prev, _, col_restart = st.columns([1, 2, 2])
     with col_prev:
-        if st.button("⬅️ Πίσω: Πιθανότητα Επιβίωσης", use_container_width=True):
+        if st.button("⬅️ Back: Survival Prediction", use_container_width=True):
             st.session_state.current_step = 4
             st.rerun()
     with col_restart:
-        if st.button("Συνέχεια: Νέος Επιβάτης (Βήμα 1) 🔄", type="primary", use_container_width=True):
+        if st.button("Start Over: New Passenger (Step 1) 🔄", type="primary", use_container_width=True):
             st.session_state.current_step = 1
             st.rerun()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # FOOTER & CREDITS & DATASET DICTIONARY
 # ─────────────────────────────────────────────────────────────────────────────
-with st.expander("📖 Λεξικό Μεταβλητών & Τεκμηρίωση Dataset (Kaggle: yasserh/titanic-dataset)"):
+with st.expander("📖 Dataset Feature Dictionary & Schema (Kaggle: yasserh/titanic-dataset)"):
     st.markdown("""
-    Το μοντέλο και τα στατιστικά βασίζονται στο διάσημο **Kaggle Titanic Dataset** (`yasserh/titanic-dataset` / Titanic ML from Disaster) με 891 επιβάτες:
+    The machine learning model and statistical analyses are trained on the **Kaggle Titanic Dataset** (`yasserh/titanic-dataset` / Titanic ML from Disaster) comprising 891 verified passenger records:
 
-    | Μεταβλητή | Περιγραφή | Τιμές / Επεξήγηση |
+    | Feature | Description | Values / Encoding |
     | :--- | :--- | :--- |
-    | **`PassengerId`** | Μοναδικό αναγνωριστικό επιβάτη | 1 έως 891 |
-    | **`Survived`** | Κατάσταση Επιβίωσης (Target) | `0` = Απώλεια, `1` = Επιβίωση |
-    | **`Pclass`** | Κοινωνικοοικονομική Τάξη (Class) | `1` = 1η Θέση (Upper), `2` = 2η (Middle), `3` = 3η (Lower) |
-    | **`Name`** | Πλήρες όνομα και κοινωνικός τίτλος | Περιλαμβάνει τίτλους όπως Mr, Mrs, Miss, Master, Col κ.ά. |
-    | **`Sex`** | Βιολογικό Φύλο | `male`, `female` |
-    | **`Age`** | Ηλικία σε έτη | Κλασματική αν < 1 έτους (π.χ. 0.92) |
-    | **`SibSp`** | Αδέλφια ή σύζυγοι στο πλοίο | `Siblings` (αδέλφια/ετεροθαλή) & `Spouses` (σύζυγοι) |
-    | **`Parch`** | Γονείς ή τέκνα στο πλοίο | `Parents` (μητέρα/πατέρας) & `Children` (γιος/κόρη) |
-    | **`Ticket`** | Κωδικός εισιτηρίου | Αλφαριθμητικό (κοινό εισιτήριο για ζευγάρια/οικογένειες) |
-    | **`Fare`** | Τιμή ναύλου εισιτηρίου | Ποσό σε λίρες Αγγλίας (£) του 1912 |
-    | **`Cabin`** | Αριθμός καμπίνας και κατάστρωμα | Γράμμα καταστρώματος (A-G) και αριθμός δωματίου |
-    | **`Embarked`** | Λιμάνι επιβίβασης | `C` = Cherbourg, `Q` = Queenstown, `S` = Southampton |
+    | **`PassengerId`** | Unique passenger identifier | 1 to 891 |
+    | **`Survived`** | Survival status (Target) | `0` = Perished, `1` = Survived |
+    | **`Pclass`** | Socioeconomic class | `1` = 1st Class (Upper), `2` = 2nd (Middle), `3` = 3rd (Lower/Steerage) |
+    | **`Name`** | Passenger full name with title | Contains honorifics (Mr, Mrs, Miss, Master, Col, etc.) |
+    | **`Sex`** | Biological sex | `male`, `female` |
+    | **`Age`** | Age in years | Fractional if < 1 year (e.g., 0.92 for 11 months) |
+    | **`SibSp`** | Siblings or spouses aboard | Sibling count + spouse count |
+    | **`Parch`** | Parents or children aboard | Parent count + child count |
+    | **`Ticket`** | Ticket number / identifier | Alphanumeric (shared for families/couples) |
+    | **`Fare`** | Passenger ocean fare | GBP (£) in 1912 currency |
+    | **`Cabin`** | Stateroom allocation | Deck letter prefix (A–G) + room number |
+    | **`Embarked`** | Port of embarkation | `C` = Cherbourg, `Q` = Queenstown, `S` = Southampton |
     """)
 
 render_html("""
 <div style="text-align: center; margin-top: 35px; padding: 20px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.85rem; color: #8fa3b8; line-height: 1.6;">
     ⚓ <b>Titanic Interactive 3D Survival Simulator</b><br>
-    Επιστημονικές & Ιστορικές Πηγές: <a href="https://www.kaggle.com/datasets/yasserh/titanic-dataset" target="_blank" style="color: #48cae4; text-decoration: none;">Kaggle Titanic Dataset</a> • <a href="https://www.encyclopedia-titanica.org" target="_blank" style="color: #48cae4; text-decoration: none;">Encyclopedia Titanica</a> • Mersey Inquiry (1912) • US Senate (1912)<br>
+    Scientific & Historical Sources: <a href="https://www.kaggle.com/datasets/yasserh/titanic-dataset" target="_blank" style="color: #48cae4; text-decoration: none;">Kaggle Titanic Dataset</a> • <a href="https://www.encyclopedia-titanica.org" target="_blank" style="color: #48cae4; text-decoration: none;">Encyclopedia Titanica</a> • Mersey Inquiry (1912) • US Senate (1912)<br>
     Machine Learning Architecture: Scikit-Learn (Logistic Regression & Gradient Boosting) • 3D Visualizations: Plotly
 </div>
 """)
