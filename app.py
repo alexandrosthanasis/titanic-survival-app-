@@ -25,6 +25,40 @@ def render_html(html_str: str):
     clean_html = "\n".join(lines)
     st.markdown(clean_html, unsafe_allow_html=True)
 
+# Custom alert renderers to completely replace Streamlit's white-theme alert boxes
+def custom_info(body, *args, **kwargs):
+    render_html(f"""
+    <div style="background: rgba(15, 30, 50, 0.9); border: 1px solid rgba(56, 189, 248, 0.45); border-left: 5px solid #0284c7; border-radius: 10px; padding: 14px 18px; margin: 14px 0; color: #f1f5f9; font-size: 0.95rem; line-height: 1.6; box-shadow: 0 4px 14px rgba(0,0,0,0.4);">
+        {body}
+    </div>
+    """)
+
+def custom_success(body, *args, **kwargs):
+    render_html(f"""
+    <div style="background: rgba(10, 40, 30, 0.9); border: 1px solid rgba(52, 211, 153, 0.45); border-left: 5px solid #10b981; border-radius: 10px; padding: 14px 18px; margin: 14px 0; color: #f1f5f9; font-size: 0.95rem; line-height: 1.6; box-shadow: 0 4px 14px rgba(0,0,0,0.4);">
+        {body}
+    </div>
+    """)
+
+def custom_warning(body, *args, **kwargs):
+    render_html(f"""
+    <div style="background: rgba(50, 35, 10, 0.9); border: 1px solid rgba(251, 191, 36, 0.45); border-left: 5px solid #f59e0b; border-radius: 10px; padding: 14px 18px; margin: 14px 0; color: #f1f5f9; font-size: 0.95rem; line-height: 1.6; box-shadow: 0 4px 14px rgba(0,0,0,0.4);">
+        {body}
+    </div>
+    """)
+
+def custom_error(body, *args, **kwargs):
+    render_html(f"""
+    <div style="background: rgba(50, 15, 20, 0.9); border: 1px solid rgba(248, 113, 113, 0.45); border-left: 5px solid #ef4444; border-radius: 10px; padding: 14px 18px; margin: 14px 0; color: #f1f5f9; font-size: 0.95rem; line-height: 1.6; box-shadow: 0 4px 14px rgba(0,0,0,0.4);">
+        {body}
+    </div>
+    """)
+
+st.info = custom_info
+st.success = custom_success
+st.warning = custom_warning
+st.error = custom_error
+
 # Custom CSS for rich maritime look and universal theme compatibility (Light & Dark)
 render_html("""
 <style>
@@ -80,12 +114,15 @@ render_html("""
     /* Form controls: text input, selectbox, sliders in both light & dark mode */
     div[data-baseweb="select"],
     div[data-baseweb="select"] *,
+    div[data-baseweb="select"] > div,
     div[data-baseweb="select"] div,
+    div[data-baseweb="select"] span,
     div[data-baseweb="select"] svg {
+        background: #121e31 !important;
         background-color: #121e31 !important;
         color: #ffffff !important;
-        border-color: rgba(56, 189, 248, 0.3) !important;
-        fill: #94a3b8 !important;
+        border-color: rgba(56, 189, 248, 0.35) !important;
+        fill: #38bdf8 !important;
     }
 
     div[data-baseweb="input"],
