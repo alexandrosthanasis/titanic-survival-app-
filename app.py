@@ -277,20 +277,11 @@ def train_model_in_memory():
 
 @st.cache_resource
 def load_model_bundle():
-    app_dir = os.path.dirname(os.path.abspath(__file__))
-    bundle_path = os.path.join(app_dir, "model", "titanic_model_bundle.joblib")
-    if not os.path.exists(bundle_path):
-        bundle_path = os.path.join(app_dir, "titanic_model_bundle.joblib")
-
-    if os.path.exists(bundle_path):
-        try:
-            bundle = joblib.load(bundle_path)
-            return bundle
-        except Exception:
-            # If pickle format differs across python/scikit-learn runtime versions,
-            # gracefully train in memory directly from Titanic.csv
-            pass
-
+    """
+    Trains the Logistic Regression & Gradient Boosting models in-memory directly
+    from Titanic.csv using the exact host environment libraries.
+    Ensures zero cross-version unpickling warnings or module import errors.
+    """
     return train_model_in_memory()
 
 bundle = load_model_bundle()
