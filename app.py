@@ -34,6 +34,13 @@ render_html("""
         font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
 
+    /* Proper container spacing */
+    .block-container {
+        padding-top: 1.5rem !important;
+        padding-bottom: 3.5rem !important;
+        max-width: 1200px !important;
+    }
+
     /* Force luxurious dark maritime canvas across all browser themes */
     .stApp, [data-testid="stAppViewContainer"], .main, header, [data-testid="stHeader"] {
         background: radial-gradient(circle at 50% 10%, #0d1b2a 0%, #080f1a 100%) !important;
@@ -51,20 +58,83 @@ render_html("""
         color: #d0dbe8 !important;
     }
 
+    /* Streamlit Alert boxes (st.info, st.success, st.warning, st.error) in Light & Dark */
+    div[data-testid="stAlert"],
+    div[data-testid="stNotification"],
+    div[data-testid="stAlertContent"] {
+        background-color: #101c2e !important;
+        border: 1px solid rgba(56, 189, 248, 0.4) !important;
+        border-radius: 12px !important;
+        color: #f1f5f9 !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    div[data-testid="stAlert"] * {
+        color: #f1f5f9 !important;
+    }
+
+    div[data-testid="stAlert"] svg {
+        fill: #38bdf8 !important;
+    }
+
     /* Form controls: text input, selectbox, sliders in both light & dark mode */
-    div[data-baseweb="select"] > div,
-    div[data-baseweb="input"] > div,
+    div[data-baseweb="select"],
+    div[data-baseweb="select"] *,
+    div[data-baseweb="select"] div,
+    div[data-baseweb="select"] svg {
+        background-color: #121e31 !important;
+        color: #ffffff !important;
+        border-color: rgba(56, 189, 248, 0.3) !important;
+        fill: #94a3b8 !important;
+    }
+
+    div[data-baseweb="input"],
+    div[data-baseweb="input"] *,
     div[data-baseweb="base-input"],
     input, textarea {
         background-color: #121e31 !important;
         color: #ffffff !important;
-        border-color: rgba(212, 175, 55, 0.4) !important;
+        border-color: rgba(56, 189, 248, 0.3) !important;
+    }
+
+    input::placeholder {
+        color: #64748b !important;
     }
 
     /* Dropdown popover menu items */
-    ul[data-baseweb="menu"], li[data-baseweb="menu-item"] {
+    div[data-baseweb="popover"],
+    div[data-baseweb="popover"] *,
+    ul[data-baseweb="menu"],
+    li[data-baseweb="menu-item"] {
         background-color: #0d1726 !important;
         color: #ffffff !important;
+    }
+
+    li[data-baseweb="menu-item"]:hover {
+        background-color: #1e3a5f !important;
+        color: #38bdf8 !important;
+    }
+
+    /* Slider adjustments */
+    div[data-testid="stSlider"] div[role="slider"] {
+        background-color: #0284c7 !important;
+        border-color: #38bdf8 !important;
+    }
+
+    /* Expanders in Light & Dark */
+    div[data-testid="stExpander"],
+    details[data-testid="stExpander"] {
+        background-color: #0f1c2d !important;
+        border: 1px solid rgba(56, 189, 248, 0.25) !important;
+        border-radius: 12px !important;
+    }
+
+    details[data-testid="stExpander"] summary {
+        color: #e2e8f0 !important;
+    }
+
+    details[data-testid="stExpander"] summary svg {
+        fill: #38bdf8 !important;
     }
 
     /* Tab navigation bar */
